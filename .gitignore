@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Aily internal files
+.aily/
+.aily_checkpoints/
+
+# Build artifacts
+*.abi.backup
+
+# OS files
+.DS_Store
+Thumbs.db

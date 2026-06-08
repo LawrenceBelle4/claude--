@@ -1,0 +1,101 @@
+{
+  "dependencies": {
+    "@aily-project/board-esp32c3": "^3.3.1",
+    "@aily-project/lib-adafruit-gfx": "^1.0.2",
+    "@aily-project/lib-arduinojson": "^1.0.0",
+    "@aily-project/lib-core-custom": "^1.1.0",
+    "@aily-project/lib-core-functions": "^1.0.1",
+    "@aily-project/lib-core-interrupt": "^0.0.1",
+    "@aily-project/lib-core-io": "^1.0.0",
+    "@aily-project/lib-core-logic": "^0.0.1",
+    "@aily-project/lib-core-loop": "^0.0.1",
+    "@aily-project/lib-core-math": "^0.0.1",
+    "@aily-project/lib-core-serial": "^0.0.1",
+    "@aily-project/lib-core-text": "^1.0.0",
+    "@aily-project/lib-core-time": "^0.0.1",
+    "@aily-project/lib-core-tone": "^0.0.2",
+    "@aily-project/lib-core-variables": "^1.0.1"
+  },
+  "buildInfo": {
+    "lastBuildTime": "2026-06-08T12:31:14.612Z",
+    "lastBuildCode": "106391321ff3a1465ce26b8d9f9f3b2d144d40e3d44f815afbbebdb1e29efdc0",
+    "lastBuildStatus": "success",
+    "lastBuildDuration": 12.48
+  },
+  "ailyBlocklyUsedLibraries": {
+    "@aily-project/lib-adafruit-gfx": {
+      "version": "^1.0.2",
+      "blockTypes": [
+        "tft_color565",
+        "tft_fill_screen",
+        "tft_init",
+        "tft_set_rotation"
+      ],
+      "updatedAt": 1780913517715
+    },
+    "@aily-project/lib-core-custom": {
+      "version": "^1.1.0",
+      "blockTypes": [
+        "custom_code"
+      ],
+      "updatedAt": 1780913517715
+    },
+    "@aily-project/lib-core-io": {
+      "version": "^1.0.0",
+      "blockTypes": [
+        "io_digitalwrite",
+        "io_state"
+      ],
+      "updatedAt": 1780913517715
+    },
+    "@aily-project/lib-core-logic": {
+      "version": "^0.0.1",
+      "blockTypes": [
+        "controls_if",
+        "logic_compare"
+      ],
+      "updatedAt": 1780901248886
+    },
+    "@aily-project/lib-core-loop": {
+      "version": "^0.0.1",
+      "blockTypes": [
+        "arduino_global",
+        "arduino_loop",
+        "arduino_setup"
+      ],
+      "updatedAt": 1780901248886
+    },
+    "@aily-project/lib-core-math": {
+      "version": "^0.0.1",
+      "blockTypes": [
+        "math_number"
+      ],
+      "updatedAt": 1780901248886
+    },
+    "@aily-project/lib-core-serial": {
+      "version": "^0.0.1",
+      "blockTypes": [
+        "serial_available",
+        "serial_begin"
+      ],
+      "updatedAt": 1780901248886
+    },
+    "@aily-project/lib-core-time": {
+      "version": "^0.0.1",
+      "blockTypes": [
+        "time_delay",
+        "time_millis"
+      ],
+      "updatedAt": 1780913517715
+    },
+    "@aily-project/lib-core-variables": {
+      "version": "^1.0.1",
+      "blockTypes": [
+        "variable_define_scoped",
+        "variables_get"
+      ],
+      "updatedAt": 1780913517715
+    }
+  },
+  "codeHash": "106391321ff3a1465ce26b8d9f9f3b2d144d40e3d44f815afbbebdb1e29efdc0"
+}

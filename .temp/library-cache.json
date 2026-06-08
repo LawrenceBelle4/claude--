@@ -1,0 +1,19 @@
+{
+  "@aily-project/lib-adafruit-gfx": {
+    "timestamp": 1780921169205,
+    "hasHeaderFiles": false,
+    "targetNames": [
+      "Adafruit-GFX-Library",
+      "Adafruit-ST7735-Library",
+      "Adafruit_BusIO",
+      "TJpg_Decoder"
+    ]
+  },
+  "@aily-project/lib-arduinojson": {
+    "timestamp": 1780921169205,
+    "hasHeaderFiles": false,
+    "targetNames": [
+      "ArduinoJson"
+    ]
+  }
+}

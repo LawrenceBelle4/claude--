@@ -1,0 +1,943 @@
+{
+  "blocks": {
+    "languageVersion": 0,
+    "blocks": [
+      {
+        "type": "arduino_global",
+        "id": "arduino_global_id0",
+        "x": 30,
+        "y": 60,
+        "deletable": false,
+        "inputs": {
+          "ARDUINO_GLOBAL": {
+            "block": {
+              "type": "variable_define_scoped",
+              "id": "*}A5;1QVfjv]n!`a`8,N",
+              "fields": {
+                "SCOPE": "global",
+                "VAR": "CC",
+                "TYPE": "unsigned int"
+              },
+              "inputs": {
+                "VALUE": {
+                  "block": {
+                    "type": "math_number",
+                    "id": "J_!PDh|G`eA0Q960[P_M",
+                    "fields": {
+                      "NUM": 0
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "variable_define_scoped",
+                  "id": "SLez9lFi/sz:@5?]5%sz",
+                  "fields": {
+                    "SCOPE": "global",
+                    "VAR": "gState",
+                    "TYPE": "int"
+                  },
+                  "inputs": {
+                    "VALUE": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "9h9}:t)djnCY0gl@|Y2#",
+                        "fields": {
+                          "NUM": 0
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "variable_define_scoped",
+                      "id": "}QRWPr**0@W~@Nl8s?mi",
+                      "fields": {
+                        "SCOPE": "global",
+                        "VAR": "gPrev",
+                        "TYPE": "int"
+                      },
+                      "inputs": {
+                        "VALUE": {
+                          "block": {
+                            "type": "math_number",
+                            "id": "[s.7lv!Z8=Lqcnqjl8v;",
+                            "fields": {
+                              "NUM": -1
+                            }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "variable_define_scoped",
+                          "id": "54P60Gy34uYrSV[?mn;z",
+                          "fields": {
+                            "SCOPE": "global",
+                            "VAR": "gFrm",
+                            "TYPE": "int"
+                          },
+                          "inputs": {
+                            "VALUE": {
+                              "block": {
+                                "type": "math_number",
+                                "id": "CuES?]NaL,QT#f$]U(e0",
+                                "fields": {
+                                  "NUM": 0
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "variable_define_scoped",
+                              "id": "!.@vfLv8~q6Uad5Tuqo9",
+                              "fields": {
+                                "SCOPE": "global",
+                                "VAR": "gMut",
+                                "TYPE": "int"
+                              },
+                              "inputs": {
+                                "VALUE": {
+                                  "block": {
+                                    "type": "math_number",
+                                    "id": "53tFB}IwfB^]jxmj_Nj]",
+                                    "fields": {
+                                      "NUM": 0
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "variable_define_scoped",
+                                  "id": "tgy0~iS5lNQFUtA8s[k/",
+                                  "fields": {
+                                    "SCOPE": "global",
+                                    "VAR": "gBtn",
+                                    "TYPE": "int"
+                                  },
+                                  "inputs": {
+                                    "VALUE": {
+                                      "block": {
+                                        "type": "math_number",
+                                        "id": "j6=bsCVZ3!JG7Tud9=Xn",
+                                        "fields": {
+                                          "NUM": 0
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "variable_define_scoped",
+                                      "id": "3Dr55iokYXvfO7srsf5L",
+                                      "fields": {
+                                        "SCOPE": "global",
+                                        "VAR": "gSolT",
+                                        "TYPE": "unsigned long"
+                                      },
+                                      "inputs": {
+                                        "VALUE": {
+                                          "block": {
+                                            "type": "math_number",
+                                            "id": "+Ndyr)x0Dp1hfR:v/^lV",
+                                            "fields": {
+                                              "NUM": 0
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "variable_define_scoped",
+                                          "id": "m}TAL--zay0-?CuVKb66",
+                                          "fields": {
+                                            "SCOPE": "global",
+                                            "VAR": "gIdleSt",
+                                            "TYPE": "unsigned int"
+                                          },
+                                          "inputs": {
+                                            "VALUE": {
+                                              "block": {
+                                                "type": "math_number",
+                                                "id": "sgP70N6p{)3z2+#uYi:=",
+                                                "fields": {
+                                                  "NUM": 0
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "variable_define_scoped",
+                                              "id": "$~]q!w%jZ3`+aWF37U5o",
+                                              "fields": {
+                                                "SCOPE": "global",
+                                                "VAR": "gIdleSub",
+                                                "TYPE": "int"
+                                              },
+                                              "inputs": {
+                                                "VALUE": {
+                                                  "block": {
+                                                    "type": "math_number",
+                                                    "id": "0W[Y(Ncd|Ex:BgYi@5NO",
+                                                    "fields": {
+                                                      "NUM": 0
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "variable_define_scoped",
+                                                  "id": "xfr!UwnA~:R#pFgCG.W3",
+                                                  "fields": {
+                                                    "SCOPE": "global",
+                                                    "VAR": "gIdleT",
+                                                    "TYPE": "unsigned long"
+                                                  },
+                                                  "inputs": {
+                                                    "VALUE": {
+                                                      "block": {
+                                                        "type": "math_number",
+                                                        "id": "X+aUMZl1Ug!xUw%O64-l",
+                                                        "fields": {
+                                                          "NUM": 0
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "next": {
+                                                    "block": {
+                                                      "type": "variable_define_scoped",
+                                                      "id": "g=HEBB+c9^w!8:N/$bv}",
+                                                      "fields": {
+                                                        "SCOPE": "global",
+                                                        "VAR": "gTrans",
+                                                        "TYPE": "int"
+                                                      },
+                                                      "inputs": {
+                                                        "VALUE": {
+                                                          "block": {
+                                                            "type": "math_number",
+                                                            "id": "lkhg+/^$3Fu!*otiB`wc",
+                                                            "fields": {
+                                                              "NUM": 0
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "arduino_setup",
+        "id": "arduino_setup_id0",
+        "x": 30,
+        "y": 180,
+        "deletable": false,
+        "inputs": {
+          "ARDUINO_SETUP": {
+            "block": {
+              "type": "serial_begin",
+              "id": "[45}wR8p]oUzb}pQ[fqd",
+              "fields": {
+                "SERIAL": "Serial",
+                "SPEED": "115200"
+              },
+              "next": {
+                "block": {
+                  "type": "tft_init",
+                  "id": "x/7hcGZk`7rbHvgd;?GR",
+                  "fields": {
+                    "MODEL": "ST7735"
+                  },
+                  "inputs": {
+                    "CS": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "(WeC~dARQbk50o|xqrD?",
+                        "fields": {
+                          "NUM": 10
+                        }
+                      }
+                    },
+                    "DC": {
+                      "block": {
+                        "type": "math_number",
+                        "id": ".$u_n@Hmfn;um]oVgnU/",
+                        "fields": {
+                          "NUM": 9
+                        }
+                      }
+                    },
+                    "MOSI": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "5M*l)TK:1NGNB7W?Gk18",
+                        "fields": {
+                          "NUM": 7
+                        }
+                      }
+                    },
+                    "SCLK": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "4|rrQP#Go(kL8yuK$+Eb",
+                        "fields": {
+                          "NUM": 6
+                        }
+                      }
+                    },
+                    "RST": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "K;a:bJ-ZDtnI6$n+t[%H",
+                        "fields": {
+                          "NUM": 8
+                        }
+                      }
+                    },
+                    "BLK": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "p[cJX!RGp9H}p%lK|Gp.",
+                        "fields": {
+                          "NUM": 5
+                        }
+                      }
+                    },
+                    "WIDTH": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "Kd-yK_C5QTv+:uJetVj/",
+                        "fields": {
+                          "NUM": 160
+                        }
+                      }
+                    },
+                    "HEIGHT": {
+                      "block": {
+                        "type": "math_number",
+                        "id": "c:/+*/,[1RMLY`~1i!mH",
+                        "fields": {
+                          "NUM": 80
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "tft_set_rotation",
+                      "id": "Aw.k%/f}#mFP.}PV0z^[",
+                      "fields": {
+                        "ROTATION": "1"
+                      },
+                      "next": {
+                        "block": {
+                          "type": "tft_fill_screen",
+                          "id": ";DB~DVL76xAKaWesQ|uz",
+                          "inputs": {
+                            "COLOR": {
+                              "block": {
+                                "type": "tft_color565",
+                                "id": "Jb1KFXjEo2^FHTn1xKQw",
+                                "inputs": {
+                                  "R": {
+                                    "block": {
+                                      "type": "math_number",
+                                      "id": "da13u%*4})N|H1vQ;F-g",
+                                      "fields": {
+                                        "NUM": 0
+                                      }
+                                    }
+                                  },
+                                  "G": {
+                                    "block": {
+                                      "type": "math_number",
+                                      "id": "o@Xrkr7DP2HR6QIMipDb",
+                                      "fields": {
+                                        "NUM": 0
+                                      }
+                                    }
+                                  },
+                                  "B": {
+                                    "block": {
+                                      "type": "math_number",
+                                      "id": "i~ZbH6MZIG`vk:SO=s+w",
+                                      "fields": {
+                                        "NUM": 0
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "custom_code",
+                              "id": "`j*i{f1O-C0a^25A!eT}",
+                              "fields": {
+                                "CODE": "CC = tft.color565(222, 136, 109);\npinMode(3, OUTPUT);\npinMode(4, OUTPUT);\npinMode(2, INPUT_PULLUP);\nattachInterrupt(digitalPinToInterrupt(2), []{ gBtn = 1; }, FALLING);\ntft.setTextSize(1); tft.setTextColor(CC);\ntft.setCursor(50, 35); tft.print(\"Clawd\");\ntft.setCursor(45, 48); tft.print(\"Monitor\");\ndelay(1200);"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "arduino_loop",
+        "id": "arduino_loop_id0",
+        "x": 30,
+        "y": 300,
+        "deletable": false,
+        "inputs": {
+          "ARDUINO_LOOP": {
+            "block": {
+              "type": "controls_if",
+              "id": "=QF|eB|?R#(`,d:s_2Nx",
+              "inputs": {
+                "IF0": {
+                  "block": {
+                    "type": "logic_compare",
+                    "id": "c-J`LAM$iH@!^WElJl%,",
+                    "fields": {
+                      "OP": "GTE"
+                    },
+                    "inputs": {
+                      "A": {
+                        "block": {
+                          "type": "serial_available",
+                          "id": "@0rf,c4ZE6R}`zcx{ZKK",
+                          "fields": {
+                            "SERIAL": "Serial"
+                          }
+                        }
+                      },
+                      "B": {
+                        "block": {
+                          "type": "math_number",
+                          "id": "pIuf*/)wcnSyy[=uRGPy",
+                          "fields": {
+                            "NUM": 1
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "DO0": {
+                  "block": {
+                    "type": "custom_code",
+                    "id": "hv6Lz5V,qax/3.mm2?ID",
+                    "fields": {
+                      "CODE": "String s = Serial.readStringUntil('\\n'); s.trim();\nif(s==\"idle\") gState=0;\nelse if(s==\"thinking\") gState=1;\nelse if(s==\"coding\") gState=2;\nelse if(s==\"done\") gState=3;\nelse if(s==\"permission\") gState=4;"
+                    }
+                  }
+                }
+              },
+              "next": {
+                "block": {
+                  "type": "controls_if",
+                  "id": "`.DRtQ?w19]nl#;xC0Qt",
+                  "inputs": {
+                    "IF0": {
+                      "block": {
+                        "type": "logic_compare",
+                        "id": "$n:hzpo(,=#:]kJ`@0+k",
+                        "fields": {
+                          "OP": "EQ"
+                        },
+                        "inputs": {
+                          "A": {
+                            "block": {
+                              "type": "variables_get",
+                              "id": "sayF$[Q5oSbo@xI0G8_j",
+                              "fields": {
+                                "VAR": {
+                                  "id": "ybZOCS22AT4aCZ(Ri/a`"
+                                }
+                              }
+                            }
+                          },
+                          "B": {
+                            "block": {
+                              "type": "math_number",
+                              "id": "p5qb-|WJr7^p]g6K0trP",
+                              "fields": {
+                                "NUM": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "DO0": {
+                      "block": {
+                        "type": "custom_code",
+                        "id": "cP+(!9k!i_h4OOkK@.E~",
+                        "fields": {
+                          "CODE": "gBtn=0; delay(40);\nif(digitalRead(2)==LOW){\n  unsigned long t0=millis();\n  while(digitalRead(2)==LOW && millis()-t0<1200) delay(20);\n  if(millis()-t0>700){gMut=!gMut; Serial.println(gMut?\"muted\":\"unmuted\");}\n  else{Serial.println(\"btn\"); if(!gMut) tone(4,1000,50);}\n}"
+                        }
+                      }
+                    }
+                  },
+                  "next": {
+                    "block": {
+                      "type": "controls_if",
+                      "id": "`s$h]TVmd@kR=htr_2]8",
+                      "inputs": {
+                        "IF0": {
+                          "block": {
+                            "type": "logic_compare",
+                            "id": ",3nzC*/@mQY5WvjAlJ-[",
+                            "fields": {
+                              "OP": "NEQ"
+                            },
+                            "inputs": {
+                              "A": {
+                                "block": {
+                                  "type": "variables_get",
+                                  "id": "0D.d]Oa#wOl{ZHD!uLuv",
+                                  "fields": {
+                                    "VAR": {
+                                      "id": "NNb{CaBw_3^7:PeIUwy["
+                                    }
+                                  }
+                                }
+                              },
+                              "B": {
+                                "block": {
+                                  "type": "variables_get",
+                                  "id": "Vv/=4vHrtr,y61?A;`Ue",
+                                  "fields": {
+                                    "VAR": {
+                                      "id": "B5Pp;PMN.bS=^[X~3fgw"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "DO0": {
+                          "block": {
+                            "type": "custom_code",
+                            "id": "F+CtexH*G|eRp(^mqmDu",
+                            "fields": {
+                              "CODE": "gPrev=gState; gFrm=0;\nif(gState==0){gIdleSt=0; gIdleT=millis();}\nelse{gTrans=(gState==1)?(int)gIdleSt:0; gIdleSt=0;}\nif(gState==3){digitalWrite(3,HIGH);delay(100);digitalWrite(3,LOW);delay(100);digitalWrite(3,HIGH);delay(100);digitalWrite(3,LOW);}\nif(gState==4){for(int i=0;i<4;i++){digitalWrite(3,HIGH);delay(40);digitalWrite(3,LOW);delay(40);}}"
+                            }
+                          }
+                        }
+                      },
+                      "next": {
+                        "block": {
+                          "type": "controls_if",
+                          "id": "T3ATGXu7P`,lXinNgnh0",
+                          "inputs": {
+                            "IF0": {
+                              "block": {
+                                "type": "logic_compare",
+                                "id": "e?+qH,I#K@NQP2@cL(Hn",
+                                "fields": {
+                                  "OP": "EQ"
+                                },
+                                "inputs": {
+                                  "A": {
+                                    "block": {
+                                      "type": "variables_get",
+                                      "id": ".Ym7~)B+s#uu3d5TUA_T",
+                                      "fields": {
+                                        "VAR": {
+                                          "id": "NNb{CaBw_3^7:PeIUwy["
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "B": {
+                                    "block": {
+                                      "type": "math_number",
+                                      "id": "}nAWY{W9TMcVnYIa$QD#",
+                                      "fields": {
+                                        "NUM": 0
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "DO0": {
+                              "block": {
+                                "type": "custom_code",
+                                "id": "fpu3Zb#lOj2x^/GUsn)d",
+                                "fields": {
+                                  "CODE": "static unsigned long t=0;\nint dl=(gIdleSt==0)?300:(gIdleSt==1)?500:600;\nif(millis()-t>(unsigned long)dl){\n  t=millis();\n  if(gIdleSt==0){\n    gFrm=(gFrm+1)%20;\n    if(millis()-gIdleT>60000){gIdleSt=random(2)+1;gIdleSub=0;}\n  }else{\n    gIdleSub=(gIdleSub+1)%20;\n  }\n  tft.fillScreen(0);\n  if(gIdleSt==0){\n    int yO=(gFrm%6<3)?0:1;\n    bool blink=(gFrm%20>=16&&gFrm%20<=17);\n    tft.fillRect(71,46,18,2,0x4208);\n    tft.fillRect(71,38,2,8,CC);tft.fillRect(75,38,2,8,CC);\n    tft.fillRect(83,38,2,8,CC);tft.fillRect(87,38,2,8,CC);\n    tft.fillRect(69,28+yO,22,14,CC);\n    tft.fillRect(65,34+yO,4,4,CC);tft.fillRect(91,34+yO,4,4,CC);\n    if(!blink){tft.fillRect(73,32+yO,2,4,0);tft.fillRect(85,32+yO,2,4,0);}\n    tft.setTextSize(1);tft.setTextColor(0x04DF);tft.setCursor(5,70);tft.print(\"idle\");\n  }else if(gIdleSt==1){\n    int yO=(gIdleSub%8<4)?0:1;\n    uint16_t bC=tft.color565(139,69,19);\n    uint16_t sB=tft.color565(100,50,10);\n    tft.fillRect(71,47,18,2,0x4208);\n    tft.fillRect(71,40,2,5,CC);tft.fillRect(75,40,2,5,CC);\n    tft.fillRect(83,40,2,5,CC);tft.fillRect(87,40,2,5,CC);\n    tft.fillRect(69,30+yO,22,12,CC);\n    tft.fillRect(65,38+yO,4,3,CC);tft.fillRect(91,38+yO,4,3,CC);\n    tft.fillRect(73,34+yO,2,2,0);tft.fillRect(85,34+yO,2,2,0);\n    tft.fillRect(68,39+yO,11,7,bC);tft.fillRect(81,39+yO,11,7,bC);\n    tft.fillRect(69,40+yO,9,5,0xFFFF);tft.fillRect(82,40+yO,9,5,0xFFFF);\n    tft.fillRect(79,39+yO,2,7,sB);\n    int tl=gIdleSub%6;\n    tft.fillRect(70,41+yO,7,1,0);tft.fillRect(70,43+yO,5,1,0);\n    tft.fillRect(83,41+yO,4+tl,1,0);tft.fillRect(83,43+yO,3+((tl+2)%5),1,0);\n    if(gIdleSub%10>=8) tft.fillRect(79,39+yO,4,7,0xFFFF);\n    tft.setTextSize(1);tft.setTextColor(0xFFE0);tft.setCursor(5,70);tft.print(\"reading\");\n  }else{\n    int yO=(gIdleSub%10<5)?0:1;\n    tft.fillRect(71,46,18,2,0x4208);\n    tft.fillRect(71,38,2,8,CC);tft.fillRect(75,38,2,8,CC);\n    tft.fillRect(83,38,2,8,CC);tft.fillRect(87,38,2,8,CC);\n    tft.fillRect(69,28+yO,22,14,CC);\n    tft.fillRect(65,34+yO,4,4,CC);tft.fillRect(91,34+yO,4,4,CC);\n    tft.fillRect(73,34+yO,2,1,0);tft.fillRect(85,34+yO,2,1,0);\n    int zp=gIdleSub%10;\n    tft.setTextSize(1);tft.setTextColor(0x07FF);\n    tft.setCursor(94,24-zp);tft.print(\"z\");\n    if(zp>=3){tft.setCursor(100,18-zp);tft.print(\"z\");}\n    if(zp>=6){tft.setCursor(106,12-zp);tft.print(\"z\");}\n    tft.setTextSize(1);tft.setTextColor(0x8410);tft.setCursor(5,70);tft.print(\"sleeping\");\n  }\n}"
+                                }
+                              }
+                            }
+                          },
+                          "next": {
+                            "block": {
+                              "type": "controls_if",
+                              "id": "OcPf)C)vC(9$#xnw(03+",
+                              "inputs": {
+                                "IF0": {
+                                  "block": {
+                                    "type": "logic_compare",
+                                    "id": "0DWB5Y0g^@{c`^9rMdKb",
+                                    "fields": {
+                                      "OP": "EQ"
+                                    },
+                                    "inputs": {
+                                      "A": {
+                                        "block": {
+                                          "type": "variables_get",
+                                          "id": "3ufO49DPppo9rhGo-VH#",
+                                          "fields": {
+                                            "VAR": {
+                                              "id": "NNb{CaBw_3^7:PeIUwy["
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "B": {
+                                        "block": {
+                                          "type": "math_number",
+                                          "id": "RvDz00TD?Am?/~^wdz-3",
+                                          "fields": {
+                                            "NUM": 1
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "DO0": {
+                                  "block": {
+                                    "type": "custom_code",
+                                    "id": "~22;-,xV0doc[_l^!IU=",
+                                    "fields": {
+                                      "CODE": "static unsigned long t=0;\nif(millis()-t>500){\n  t=millis();\n  tft.fillScreen(0);\n  if(gTrans>0 && gFrm<4){\n    gFrm++;\n    if(gTrans==1){\n      tft.fillRect(71,46,18,2,0x4208);\n      tft.fillRect(71,38,2,8,CC);tft.fillRect(75,38,2,8,CC);\n      tft.fillRect(83,38,2,8,CC);tft.fillRect(87,38,2,8,CC);\n      tft.fillRect(69,28,22,14,CC);\n      tft.fillRect(65,34,4,4,CC);tft.fillRect(91,34,4,4,CC);\n      int eH=min(2+gFrm,4);\n      tft.fillRect(73,32,2,eH,0);tft.fillRect(85,32,2,eH,0);\n      int bY=40+gFrm*3;\n      if(bY<48){uint16_t bC=tft.color565(139,69,19);tft.fillRect(74,bY,12,5,bC);tft.fillRect(76,bY+1,8,3,0xFFFF);}\n    }else{\n      int yU=-min(gFrm,2);\n      tft.fillRect(71,46,18,2,0x4208);\n      tft.fillRect(71,38,2,8,CC);tft.fillRect(75,38,2,8,CC);\n      tft.fillRect(83,38,2,8,CC);tft.fillRect(87,38,2,8,CC);\n      tft.fillRect(69,28+yU,22,14,CC);\n      tft.fillRect(65,34+yU,4,4,CC);tft.fillRect(91,34+yU,4,4,CC);\n      int eH=1+gFrm;if(eH>4)eH=4;\n      tft.fillRect(73,32+yU,2,eH,0);tft.fillRect(85,32+yU,2,eH,0);\n    }\n    tft.setTextSize(1);tft.setTextColor(0xFFE0);tft.setCursor(5,70);tft.print(\"thinking\");\n    if(gFrm>=4) gTrans=0;\n  }else{\n    gTrans=0;\n    gFrm=(gFrm+1)%12;\n    int xO=(gFrm<6)?-4:4;\n    int ox=65+xO;\n    tft.fillRect(ox+6,46,18,2,0x4208);\n    tft.fillRect(ox+6,38,2,8,CC);tft.fillRect(ox+10,38,2,8,CC);\n    tft.fillRect(ox+18,38,2,8,CC);tft.fillRect(ox+22,38,2,8,CC);\n    tft.fillRect(ox+4,28,22,14,CC);\n    int armOff=(gFrm<6)?-4:0;\n    tft.fillRect(ox,34+armOff,4,4,CC);tft.fillRect(ox+26,34,4,4,CC);\n    tft.fillRect(ox+8,32,2,3,0);tft.fillRect(ox+20,32,2,3,0);\n    int bx=ox-8,by=2;\n    tft.fillRoundRect(bx,by,18,16,3,0xFFFF);\n    tft.fillRect(ox+4,22,2,2,0xFFFF);tft.fillRect(ox+8,25,1,1,0xFFFF);\n    uint16_t dotC=tft.color565(37,104,145);\n    if(gFrm%6>=1) tft.fillRect(bx+2,by+6,2,2,dotC);\n    if(gFrm%6>=3) tft.fillRect(bx+6,by+6,2,2,dotC);\n    if(gFrm%6>=5){\n      tft.fillRect(bx+10,by+6,2,2,dotC);\n      uint16_t sc=tft.color565(255,224,102);\n      tft.fillRect(ox+12,0,2,2,sc);\n      tft.fillRect(ox+12,2,2,2,sc);tft.fillRect(ox+12,-2,2,2,sc);\n      tft.fillRect(ox+10,0,2,2,sc);tft.fillRect(ox+14,0,2,2,sc);\n    }\n    tft.setTextSize(1);tft.setTextColor(0xFFE0);tft.setCursor(5,70);tft.print(\"thinking\");\n  }\n}"
+                                    }
+                                  }
+                                }
+                              },
+                              "next": {
+                                "block": {
+                                  "type": "controls_if",
+                                  "id": "9lMGPz*Zs;:m.qV7Z#4o",
+                                  "inputs": {
+                                    "IF0": {
+                                      "block": {
+                                        "type": "logic_compare",
+                                        "id": "aY79/MhImuYsVY/UpP_2",
+                                        "fields": {
+                                          "OP": "EQ"
+                                        },
+                                        "inputs": {
+                                          "A": {
+                                            "block": {
+                                              "type": "variables_get",
+                                              "id": "Ke/}G,.B^b2G|-}0Bz16",
+                                              "fields": {
+                                                "VAR": {
+                                                  "id": "NNb{CaBw_3^7:PeIUwy["
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "B": {
+                                            "block": {
+                                              "type": "math_number",
+                                              "id": "1VzUcX*u=U$AP#=lGcYI",
+                                              "fields": {
+                                                "NUM": 2
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "DO0": {
+                                      "block": {
+                                        "type": "custom_code",
+                                        "id": "F0}xLq;5/(r!rwoqE(Mx",
+                                        "fields": {
+                                          "CODE": "static unsigned long t=0;\nif(millis()-t>200){\n  t=millis(); gFrm=(gFrm+1)%24;\n  tft.fillScreen(0x0000);\n  int yO=(gFrm%4<2)?0:2;\n  uint16_t sbg=tft.color565(30,30,46);\n  uint16_t sbr=tft.color565(45,45,61);\n  tft.fillRect(66,4,27,22,sbg);\n  tft.fillRect(66,4,27,2,sbr);\n  tft.fillRect(67,5,2,1,0xF800); tft.fillRect(70,5,2,1,0xFFE0); tft.fillRect(73,5,2,1,0x07E0);\n  uint16_t cg=tft.color565(76,175,80);\n  uint16_t cb=tft.color565(64,196,255);\n  uint16_t cy=tft.color565(255,193,7);\n  int li=gFrm/4;\n  tft.fillRect(67,8,10,1,cg); tft.fillRect(69,11,16,1,cg);\n  tft.fillRect(69,14,(9+li)%16,1,cb); tft.fillRect(67,17,(4+li)%8,1,cy);\n  uint16_t db=tft.color565(64,196,255);\n  if(gFrm%6<3) tft.fillRect(71,1,2,2,db);\n  if(gFrm%6>=3) tft.fillRect(83,0,2,2,db);\n  tft.fillRect(71,46,18,2,0x4208);\n  tft.fillRect(71,38,2,8,CC); tft.fillRect(75,38,2,8,CC);\n  tft.fillRect(83,38,2,8,CC); tft.fillRect(87,38,2,8,CC);\n  tft.fillRect(69,28+yO,22,14,CC);\n  uint16_t kc=tft.color565(69,90,100);\n  uint16_t kk=tft.color565(120,144,156);\n  tft.fillRect(64,40,32,6,kc);\n  tft.fillRect(66,41,28,1,kk);\n  tft.fillRect(66,43,28,1,kk);\n  int aL=(gFrm%2==0)?-2:0;\n  int aR=(gFrm%2==1)?-2:0;\n  tft.fillRect(65,34+yO+aL,4,4,CC); tft.fillRect(91,34+yO+aR,4,4,CC);\n  tft.fillRect(73,32+yO,2,3,0); tft.fillRect(85,32+yO,2,3,0);\n  tft.setTextSize(1); tft.setTextColor(0x07E0); tft.setCursor(5,70); tft.print(\"typing\");\n}"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "next": {
+                                    "block": {
+                                      "type": "controls_if",
+                                      "id": "aO5+;.t5~F22EKWjUAI+",
+                                      "inputs": {
+                                        "IF0": {
+                                          "block": {
+                                            "type": "logic_compare",
+                                            "id": "qG}4SyRRxwc1()ec-3J;",
+                                            "fields": {
+                                              "OP": "EQ"
+                                            },
+                                            "inputs": {
+                                              "A": {
+                                                "block": {
+                                                  "type": "variables_get",
+                                                  "id": "h]yvm%JVLRThi1!n7]8,",
+                                                  "fields": {
+                                                    "VAR": {
+                                                      "id": "NNb{CaBw_3^7:PeIUwy["
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "B": {
+                                                "block": {
+                                                  "type": "math_number",
+                                                  "id": "|LJ24#*~d?nllYs{Vw~p",
+                                                  "fields": {
+                                                    "NUM": 3
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "DO0": {
+                                          "block": {
+                                            "type": "custom_code",
+                                            "id": ":@ev.Q,66DW3%`LG:z%:",
+                                            "fields": {
+                                              "CODE": "static unsigned long t=0;\nif(millis()-t>180){\n  t=millis(); gFrm=gFrm+1;\n  tft.fillScreen(0x0000);\n  int phase=gFrm%8;\n  int jump=0;\n  if(phase>=1 && phase<=3) jump=-(phase*(4-phase))*2;\n  uint16_t gold=tft.color565(255,215,0);\n  uint16_t amb=tft.color565(255,193,7);\n  uint16_t ly=tft.color565(255,249,157);\n  if(gFrm%4<2){\n    tft.fillRect(57,12,2,2,gold); tft.fillRect(57,10,2,2,gold); tft.fillRect(57,14,2,2,gold);\n    tft.fillRect(55,12,2,2,gold); tft.fillRect(59,12,2,2,gold);\n    tft.fillRect(101,8,2,2,amb); tft.fillRect(101,6,2,2,amb); tft.fillRect(101,10,2,2,amb);\n    tft.fillRect(99,8,2,2,amb); tft.fillRect(103,8,2,2,amb);\n  } else {\n    tft.fillRect(105,36,2,2,ly); tft.fillRect(105,34,2,2,ly); tft.fillRect(105,38,2,2,ly);\n    tft.fillRect(103,36,2,2,ly); tft.fillRect(107,36,2,2,ly);\n    tft.fillRect(53,40,2,2,amb); tft.fillRect(53,38,2,2,amb); tft.fillRect(53,42,2,2,amb);\n    tft.fillRect(51,40,2,2,amb); tft.fillRect(55,40,2,2,amb);\n  }\n  tft.fillRect(71,46,18,2,0x4208);\n  tft.fillRect(69,28+jump,22,14,CC);\n  tft.fillRect(71,38+jump,2,4,CC); tft.fillRect(75,38+jump,2,4,CC);\n  tft.fillRect(83,38+jump,2,4,CC); tft.fillRect(87,38+jump,2,4,CC);\n  tft.fillRect(65,34+jump,4,4,CC); tft.fillRect(91,34+jump,4,4,CC);\n  bool hblink=(gFrm%8==4);\n  if(!hblink){tft.fillRect(73,32+jump,2,4,0); tft.fillRect(85,32+jump,2,4,0);}\n  tft.setTextSize(1); tft.setTextColor(0x07E0); tft.setCursor(5,70); tft.print(\"done!\");\n  if(!gMut && gFrm<16){int fq[]={523,659,784,1047,0,1319,1568,2093,0,1047,1568,0,2093,0,0,0}; if(fq[gFrm]>0) tone(4,fq[gFrm],150);}\n}"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "next": {
+                                        "block": {
+                                          "type": "controls_if",
+                                          "id": "cDWt)J;ID0ih+b+|Z:Nh",
+                                          "inputs": {
+                                            "IF0": {
+                                              "block": {
+                                                "type": "logic_compare",
+                                                "id": ")`Blm-ft;=CaJ#$mV^cp",
+                                                "fields": {
+                                                  "OP": "EQ"
+                                                },
+                                                "inputs": {
+                                                  "A": {
+                                                    "block": {
+                                                      "type": "variables_get",
+                                                      "id": "oR4hf_8:w=%$mEly%G3A",
+                                                      "fields": {
+                                                        "VAR": {
+                                                          "id": "NNb{CaBw_3^7:PeIUwy["
+                                                        }
+                                                      }
+                                                    }
+                                                  },
+                                                  "B": {
+                                                    "block": {
+                                                      "type": "math_number",
+                                                      "id": "LEDuZN8p8GOH0QzV=i!v",
+                                                      "fields": {
+                                                        "NUM": 4
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            "DO0": {
+                                              "block": {
+                                                "type": "custom_code",
+                                                "id": "Cm.JtqM/jkZ_l#.nw:;n",
+                                                "fields": {
+                                                  "CODE": "static unsigned long t=0;\nif(millis()-t>400){\n  t=millis(); gFrm=!gFrm;\n  tft.fillScreen(gFrm ? 0xC520 : 0x0000);\n  tft.fillRect(71,46,18,2,0x4208);\n  tft.fillRect(71,38,2,8,CC); tft.fillRect(75,38,2,8,CC);\n  tft.fillRect(83,38,2,8,CC); tft.fillRect(87,38,2,8,CC);\n  tft.fillRect(69,28,22,14,CC);\n  tft.fillRect(65,34,4,4,CC); tft.fillRect(91,34,4,4,CC);\n  tft.fillRect(73,32,2,4,0); tft.fillRect(85,32,2,4,0);\n  tft.fillRoundRect(80,2,18,16,3,0xFFE0);\n  tft.fillRoundRect(82,4,14,12,2,0x0000);\n  tft.setTextSize(2); tft.setTextColor(0xFFE0); tft.setCursor(85,5); tft.print(\"?\");\n  uint16_t tc=gFrm ? 0xF800 : 0xFFE0;\n  tft.setTextSize(1); tft.setTextColor(tc); tft.setCursor(5,70); tft.print(\"Waiting\");\n  }"
+                                                }
+                                              }
+                                            }
+                                          },
+                                          "next": {
+                                            "block": {
+                                              "type": "controls_if",
+                                              "id": "FrBojg@1ncvj;r,:|~Y!",
+                                              "inputs": {
+                                                "IF0": {
+                                                  "block": {
+                                                    "type": "logic_compare",
+                                                    "id": "~~_@hpndTzmmKqYxv_7=",
+                                                    "fields": {
+                                                      "OP": "GTE"
+                                                    },
+                                                    "inputs": {
+                                                      "A": {
+                                                        "block": {
+                                                          "type": "time_millis",
+                                                          "id": "o7$aNO--;rp(}nGlux%T"
+                                                        }
+                                                      },
+                                                      "B": {
+                                                        "block": {
+                                                          "type": "variables_get",
+                                                          "id": ",9zds$aQgXSO=XBe%ki$",
+                                                          "fields": {
+                                                            "VAR": {
+                                                              "id": "$zP-_-iF/$z:nvi;7W{n"
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "DO0": {
+                                                  "block": {
+                                                    "type": "io_digitalwrite",
+                                                    "id": "rTnTj-@Sz}p~7Pcq;S;r",
+                                                    "inputs": {
+                                                      "PIN": {
+                                                        "block": {
+                                                          "type": "math_number",
+                                                          "id": "w=L2Zq#/N5NXn8l|Wf7b",
+                                                          "fields": {
+                                                            "NUM": 3
+                                                          }
+                                                        }
+                                                      },
+                                                      "STATE": {
+                                                        "block": {
+                                                          "type": "io_state",
+                                                          "id": "`7M%$iUHgV1$;.GQOm+T",
+                                                          "fields": {
+                                                            "STATE": "LOW"
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              "next": {
+                                                "block": {
+                                                  "type": "time_delay",
+                                                  "id": "t*@};3e(3P;6tQ]i:c~t",
+                                                  "inputs": {
+                                                    "DELAY_TIME": {
+                                                      "block": {
+                                                        "type": "math_number",
+                                                        "id": "f/k_~?}X`hbMqQ.ZrQfQ",
+                                                        "fields": {
+                                                          "NUM": 30
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "variables": [
+    {
+      "name": "gBtn",
+      "id": "ybZOCS22AT4aCZ(Ri/a`"
+    },
+    {
+      "name": "gState",
+      "id": "NNb{CaBw_3^7:PeIUwy["
+    },
+    {
+      "name": "gPrev",
+      "id": "B5Pp;PMN.bS=^[X~3fgw"
+    },
+    {
+      "name": "gSolT",
+      "id": "$zP-_-iF/$z:nvi;7W{n"
+    },
+    {
+      "name": "CC",
+      "id": "e@PT7SZ/r]yEqT[VS4iA"
+    },
+    {
+      "name": "gFrm",
+      "id": "cW~49A4C]u[}11ONW09S"
+    },
+    {
+      "name": "gMut",
+      "id": "~2?XcRVA?K-DpTY?}oj~"
+    },
+    {
+      "name": "gIdleSt",
+      "id": "oZZ}UQdCver0b$/Q+x;4"
+    },
+    {
+      "name": "gIdleSub",
+      "id": "2kJ4`b(k#he5A2goMib("
+    },
+    {
+      "name": "gIdleT",
+      "id": ":$eA(P!C13%!mDI{z31D"
+    },
+    {
+      "name": "variable",
+      "id": "buv2;j%T@Lj!b8E)_i4U"
+    },
+    {
+      "name": "gTrans",
+      "id": "zpV|Gwv,)a(=+7;Ya~,e"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+# ============================================
+# Clawd Pixel Crab Monitor - Faithful SVG Reproduction
+# Based on: https://github.com/rullerzhou-afk/clawd-on-desk
+# ESP32-C3 + 0.96" TFT(ST7735) 160x80
+# ============================================
+
+arduino_global()
+    variable_define_scoped(global, "CC", unsigned int, math_number(0))
+    variable_define_scoped(global, "gState", int, math_number(0))
+    variable_define_scoped(global, "gPrev", int, math_number(-1))
+    variable_define_scoped(global, "gFrm", int, math_number(0))
+    variable_define_scoped(global, "gMut", int, math_number(0))
+    variable_define_scoped(global, "gBtn", int, math_number(0))
+    variable_define_scoped(global, "gSolT", unsigned long, math_number(0))
+
+arduino_setup()
+    serial_begin(Serial, 115200)
+    tft_init(ST7735, math_number(10), math_number(9), math_number(7), math_number(6), math_number(8), math_number(5), math_number(160), math_number(80))
+    tft_set_rotation("1")
+    tft_fill_screen(tft_color565(math_number(0), math_number(0), math_number(0)))
+    custom_code("CC = tft.color565(222, 136, 109);\npinMode(3, OUTPUT);\npinMode(4, OUTPUT);\npinMode(2, INPUT_PULLUP);\nattachInterrupt(digitalPinToInterrupt(2), []{ gBtn = 1; }, FALLING);\ntft.setTextSize(1); tft.setTextColor(CC);\ntft.setCursor(50, 35); tft.print(\"Clawd\");\ntft.setCursor(45, 48); tft.print(\"Monitor\");\ndelay(1200);")
+
+arduino_loop()
+    controls_if()
+        @IF0: logic_compare(serial_available(Serial), GTE, math_number(1))
+        @DO0:
+            custom_code("String s = Serial.readStringUntil('\\n'); s.trim();\nif(s==\"idle\") gState=0;\nelse if(s==\"thinking\") gState=1;\nelse if(s==\"coding\") gState=2;\nelse if(s==\"done\") gState=3;\nelse if(s==\"permission\") gState=4;")
+    controls_if()
+        @IF0: logic_compare(variables_get($gBtn), EQ, math_number(1))
+        @DO0:
+            custom_code("gBtn=0; delay(40);\nif(digitalRead(2)==LOW){\n  unsigned long t0=millis();\n  while(digitalRead(2)==LOW && millis()-t0<1200) delay(20);\n  if(millis()-t0>700){gMut=!gMut; Serial.println(gMut?\"muted\":\"unmuted\");}\n  else{Serial.println(\"btn\"); if(!gMut) tone(4,1000,50);}\n}")
+    controls_if()
+        @IF0: logic_compare(variables_get($gState), NEQ, variables_get($gPrev))
+        @DO0:
+            custom_code("gPrev=gState; gFrm=0;\nif(gState==3){gSolT=millis()+300; digitalWrite(3,HIGH);}\nif(gState==4){gSolT=millis()+200; digitalWrite(3,HIGH);}")
+    controls_if()
+        @IF0: logic_compare(variables_get($gState), EQ, math_number(0))
+        @DO0:
+            custom_code("static unsigned long t=0;\nif(millis()-t>300){\n  t=millis(); gFrm=(gFrm+1)%20;\n  tft.fillScreen(0x0000);\n  int yO=(gFrm%6<3)?0:1;\n  bool blink=(gFrm%20>=16 && gFrm%20<=17);\n  tft.fillRect(71,46,18,2,0x4208);\n  tft.fillRect(71,38,2,8,CC); tft.fillRect(75,38,2,8,CC);\n  tft.fillRect(83,38,2,8,CC); tft.fillRect(87,38,2,8,CC);\n  tft.fillRect(69,28+yO,22,14,CC);\n  tft.fillRect(65,34+yO,4,4,CC); tft.fillRect(91,34+yO,4,4,CC);\n  if(!blink){tft.fillRect(73,32+yO,2,4,0); tft.fillRect(85,32+yO,2,4,0);}\n  if(gFrm%10==0){tft.drawCircle(95,28,3,0x04DF); tft.drawCircle(95,28,1,0x04DF);}\n  tft.setTextSize(1); tft.setTextColor(0x04DF); tft.setCursor(5,70); tft.print(\"idle\");\n  if(!gMut && gFrm%10==0) tone(4,350,30);\n}")
+    controls_if()
+        @IF0: logic_compare(variables_get($gState), EQ, math_number(1))
+        @DO0:
+            custom_code("static unsigned long t=0;\nif(millis()-t>500){\n  t=millis(); gFrm=(gFrm+1)%12;\n  tft.fillScreen(0x0000);\n  int xO=(gFrm<6)?-4:4;\n  int ox=65+xO;\n  tft.fillRect(ox+6,46,18,2,0x4208);\n  tft.fillRect(ox+6,38,2,8,CC); tft.fillRect(ox+10,38,2,8,CC);\n  tft.fillRect(ox+18,38,2,8,CC); tft.fillRect(ox+22,38,2,8,CC);\n  tft.fillRect(ox+4,28,22,14,CC);\n  int armOff=(gFrm<6)?-4:0;\n  tft.fillRect(ox,34+armOff,4,4,CC); tft.fillRect(ox+26,34,4,4,CC);\n  tft.fillRect(ox+8,32,2,3,0); tft.fillRect(ox+20,32,2,3,0);\n  int bx=ox-8, by=2;\n  tft.fillRoundRect(bx,by,18,16,3,0xFFFF);\n  tft.fillRect(ox+4,22,2,2,0xFFFF);\n  tft.fillRect(ox+8,25,1,1,0xFFFF);\n  uint16_t dotC=tft.color565(37,104,145);\n  if(gFrm%6>=1) tft.fillRect(bx+2,by+6,2,2,dotC);\n  if(gFrm%6>=3) tft.fillRect(bx+6,by+6,2,2,dotC);\n  if(gFrm%6>=5) tft.fillRect(bx+10,by+6,2,2,dotC);\n  if(gFrm%6>=5){\n    uint16_t sc=tft.color565(255,224,102);\n    tft.fillRect(ox+12,0,2,2,sc);\n    tft.fillRect(ox+12,2,2,2,sc); tft.fillRect(ox+12,-2,2,2,sc);\n    tft.fillRect(ox+10,0,2,2,sc); tft.fillRect(ox+14,0,2,2,sc);\n  }\n  tft.setTextSize(1); tft.setTextColor(0xFFE0); tft.setCursor(5,70); tft.print(\"thinking\");\n  if(!gMut) tone(4,500+gFrm*40,20);\n}")
+    controls_if()
+        @IF0: logic_compare(variables_get($gState), EQ, math_number(2))
+        @DO0:
+            custom_code("static unsigned long t=0;\nif(millis()-t>200){\n  t=millis(); gFrm=(gFrm+1)%24;\n  tft.fillScreen(0x0000);\n  int yO=(gFrm%4<2)?0:2;\n  uint16_t sbg=tft.color565(30,30,46);\n  uint16_t sbr=tft.color565(45,45,61);\n  tft.fillRect(66,4,27,22,sbg);\n  tft.fillRect(66,4,27,2,sbr);\n  tft.fillRect(67,5,2,1,0xF800); tft.fillRect(70,5,2,1,0xFFE0); tft.fillRect(73,5,2,1,0x07E0);\n  uint16_t cg=tft.color565(76,175,80);\n  uint16_t cb=tft.color565(64,196,255);\n  uint16_t cy=tft.color565(255,193,7);\n  int li=gFrm/4;\n  tft.fillRect(67,8,10,1,cg); tft.fillRect(69,11,16,1,cg);\n  tft.fillRect(69,14,(9+li)%16,1,cb); tft.fillRect(67,17,(4+li)%8,1,cy);\n  uint16_t db=tft.color565(64,196,255);\n  if(gFrm%6<3) tft.fillRect(71,1,2,2,db);\n  if(gFrm%6>=3) tft.fillRect(83,0,2,2,db);\n  tft.fillRect(71,46,18,2,0x4208);\n  tft.fillRect(71,38,2,8,CC); tft.fillRect(75,38,2,8,CC);\n  tft.fillRect(83,38,2,8,CC); tft.fillRect(87,38,2,8,CC);\n  tft.fillRect(69,28+yO,22,14,CC);\n  uint16_t kc=tft.color565(69,90,100);\n  uint16_t kk=tft.color565(120,144,156);\n  tft.fillRect(64,40,32,6,kc);\n  tft.fillRect(66,41,28,1,kk);\n  tft.fillRect(66,43,28,1,kk);\n  int aL=(gFrm%2==0)?-2:0;\n  int aR=(gFrm%2==1)?-2:0;\n  tft.fillRect(65,34+yO+aL,4,4,CC); tft.fillRect(91,34+yO+aR,4,4,CC);\n  tft.fillRect(73,32+yO,2,3,0); tft.fillRect(85,32+yO,2,3,0);\n  tft.setTextSize(1); tft.setTextColor(0x07E0); tft.setCursor(5,70); tft.print(\"typing\");\n  if(!gMut && gFrm%4==0) tone(4,800,15);\n}")
+    controls_if()
+        @IF0: logic_compare(variables_get($gState), EQ, math_number(3))
+        @DO0:
+            custom_code("static unsigned long t=0;\nif(millis()-t>180){\n  t=millis(); gFrm=(gFrm+1)%16;\n  tft.fillScreen(0x0000);\n  int phase=gFrm%8;\n  int jump=0;\n  if(phase>=1 && phase<=3) jump=-(phase*(4-phase))*2;\n  uint16_t gold=tft.color565(255,215,0);\n  uint16_t amb=tft.color565(255,193,7);\n  uint16_t ly=tft.color565(255,249,157);\n  if(gFrm%4<2){\n    tft.fillRect(57,12,2,2,gold); tft.fillRect(57,10,2,2,gold); tft.fillRect(57,14,2,2,gold);\n    tft.fillRect(55,12,2,2,gold); tft.fillRect(59,12,2,2,gold);\n    tft.fillRect(101,8,2,2,amb); tft.fillRect(101,6,2,2,amb); tft.fillRect(101,10,2,2,amb);\n    tft.fillRect(99,8,2,2,amb); tft.fillRect(103,8,2,2,amb);\n  } else {\n    tft.fillRect(105,36,2,2,ly); tft.fillRect(105,34,2,2,ly); tft.fillRect(105,38,2,2,ly);\n    tft.fillRect(103,36,2,2,ly); tft.fillRect(107,36,2,2,ly);\n    tft.fillRect(53,40,2,2,amb); tft.fillRect(53,38,2,2,amb); tft.fillRect(53,42,2,2,amb);\n    tft.fillRect(51,40,2,2,amb); tft.fillRect(55,40,2,2,amb);\n  }\n  tft.fillRect(71,46,18,2,0x4208);\n  tft.fillRect(69,28+jump,22,14,CC);\n  tft.fillRect(71,38+jump,2,4,CC); tft.fillRect(75,38+jump,2,4,CC);\n  tft.fillRect(83,38+jump,2,4,CC); tft.fillRect(87,38+jump,2,4,CC);\n  tft.fillRect(65,34+jump,4,4,CC); tft.fillRect(91,34+jump,4,4,CC);\n  bool hblink=(gFrm%8==4);\n  if(!hblink){tft.fillRect(73,32+jump,2,4,0); tft.fillRect(85,32+jump,2,4,0);}\n  tft.setTextSize(1); tft.setTextColor(0x07E0); tft.setCursor(5,70); tft.print(\"done!\");\n  if(!gMut) tone(4,1000+gFrm*60,40);\n}")
+    controls_if()
+        @IF0: logic_compare(variables_get($gState), EQ, math_number(4))
+        @DO0:
+            custom_code("static unsigned long t=0;\nif(millis()-t>400){\n  t=millis(); gFrm=!gFrm;\n  tft.fillScreen(gFrm ? tft.color565(60,0,0) : 0x0000);\n  tft.fillRect(71,46,18,2,0x4208);\n  tft.fillRect(71,38,2,8,CC); tft.fillRect(75,38,2,8,CC);\n  tft.fillRect(83,38,2,8,CC); tft.fillRect(87,38,2,8,CC);\n  tft.fillRect(69,28,22,14,CC);\n  tft.fillRect(65,34,4,4,CC); tft.fillRect(91,34,4,4,CC);\n  tft.fillRect(73,32,2,4,0); tft.fillRect(85,32,2,4,0);\n  tft.fillRoundRect(80,2,18,16,3,0xFFE0);\n  tft.fillRoundRect(82,4,14,12,2,0x0000);\n  tft.setTextSize(2); tft.setTextColor(0xFFE0); tft.setCursor(85,5); tft.print(\"?\");\n  uint16_t tc=gFrm ? 0xF800 : 0xFFE0;\n  tft.setTextSize(1); tft.setTextColor(tc); tft.setCursor(5,70); tft.print(\"[BTN]\");\n  if(!gMut) tone(4, gFrm?1500:500, 80);\n  gSolT=millis()+150; digitalWrite(3, gFrm);\n}")
+    controls_if()
+        @IF0: logic_compare(time_millis(), GTE, variables_get($gSolT))
+        @DO0:
+            io_digitalwrite(math_number(3), io_state(LOW))
+    time_delay(math_number(30))

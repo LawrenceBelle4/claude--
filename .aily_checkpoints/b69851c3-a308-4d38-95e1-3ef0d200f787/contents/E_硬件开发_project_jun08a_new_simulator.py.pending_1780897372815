@@ -1,0 +1,469 @@
+#!/usr/bin/env python3
+"""
+Claude Code Status Monitor - Hardware Simulator
+================================================
+Preview the status monitor without physical hardware.
+Simulates TFT display, buzzer sounds, solenoid tapping, and button.
+
+Run with: python simulator.py
+Or via bridge: python bridge.py --mode simulate
+"""
+
+import tkinter as tk
+from tkinter import ttk, font
+import threading
+import time
+import winsound  # Windows only for buzzer simulation
+import math
+
+
+class HardwareSimulator:
+    """Simulates ESP32 hardware: TFT, buzzer, solenoid, button"""
+    
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Claude Monitor - Hardware Simulator")
+        self.root.configure(bg='#1a1a1a')
+        self.root.resizable(False, False)
+        
+        # State variables
+        self.current_state = "idle"
+        self.anim_frame = 0
+        self.muted = False
+        self.solenoid_active = False
+        
+        # Animation timers
+        self.anim_running = True
+        self.last_anim_time = 0
+        
+        # Create GUI
+        self._create_gui()
+        
+        # Start animation thread
+        self.anim_thread = threading.Thread(target=self._animation_loop, daemon=True)
+        self.anim_thread.start()
+    
+    def _create_gui(self):
+        """Create the simulator GUI"""
+        
+        # Main frame
+        main_frame = ttk.Frame(self.root, padding=10)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Style
+        style = ttk.Style()
+        style.configure('TFrame', background='#1a1a1a')
+        style.configure('TLabel', background='#1a1a1a', foreground='white')
+        style.configure('TButton', padding=5)
+        
+        # === TFT Display Simulation (160x80 scaled 2x = 320x160) ===
+        tft_frame = ttk.LabelFrame(main_frame, text="TFT Display (0.96\" 160x80)", padding=5)
+        tft_frame.pack(pady=5)
+        
+        self.tft_canvas = tk.Canvas(
+            tft_frame, 
+            width=320, height=160,
+            bg='black',
+            highlightthickness=2,
+            highlightbackground='#333'
+        )
+        self.tft_canvas.pack()
+        
+        # === Status Indicator ===
+        status_frame = ttk.Frame(main_frame)
+        status_frame.pack(fill=tk.X, pady=5)
+        
+        ttk.Label(status_frame, text="Current State:", font=('Arial', 10)).pack(side=tk.LEFT)
+        
+        self.status_var = tk.StringVar(value="💤 idle")
+        self.status_label = ttk.Label(
+            status_frame, 
+            textvariable=self.status_var,
+            font=('Arial', 12, 'bold'),
+            foreground='#00ff88'
+        )
+        self.status_label.pack(side=tk.LEFT, padx=10)
+        
+        # === Buzzer Simulation ===
+        buzzer_frame = ttk.LabelFrame(main_frame, text="Buzzer", padding=5)
+        buzzer_frame.pack(fill=tk.X, pady=5)
+        
+        self.buzzer_indicator = tk.Canvas(buzzer_frame, width=30, height=30, bg='#1a1a1a', highlightthickness=0)
+        self.buzzer_indicator.pack(side=tk.LEFT, padx=5)
+        self.buzzer_indicator.create_oval(5, 5, 25, 25, fill='gray', outline='#666', tags='buzzer')
+        
+        self.mute_var = tk.BooleanVar(value=False)
+        self.mute_check = ttk.Checkbutton(buzzer_frame, text="Muted", variable=self.mute_var, command=self._toggle_mute)
+        self.mute_check.pack(side=tk.LEFT, padx=10)
+        
+        ttk.Button(buzzer_frame, text="Test Beep", command=self._test_beep).pack(side=tk.RIGHT)
+        
+        # === Solenoid Simulation ===
+        solenoid_frame = ttk.LabelFrame(main_frame, text="Solenoid (电磁铁)", padding=5)
+        solenoid_frame.pack(fill=tk.X, pady=5)
+        
+        self.solenoid_indicator = tk.Canvas(solenoid_frame, width=60, height=30, bg='#1a1a1a', highlightthickness=0)
+        self.solenoid_indicator.pack(side=tk.LEFT, padx=5)
+        self.solenoid_indicator.create_rectangle(5, 5, 55, 25, fill='gray', outline='#666', tags='solenoid')
+        
+        self.solenoid_label = ttk.Label(solenoid_frame, text="OFF", font=('Arial', 10))
+        self.solenoid_label.pack(side=tk.LEFT, padx=10)
+        
+        ttk.Button(solenoid_frame, text="Test Tap", command=self._test_solenoid).pack(side=tk.RIGHT)
+        
+        # === Button Simulation ===
+        button_frame = ttk.LabelFrame(main_frame, text="Button (微动按钮)", padding=5)
+        button_frame.pack(fill=tk.X, pady=5)
+        
+        self.button_canvas = tk.Canvas(button_frame, width=60, height=40, bg='#1a1a1a', highlightthickness=0)
+        self.button_canvas.pack(side=tk.LEFT, padx=5)
+        self.button_canvas.create_rectangle(10, 10, 50, 30, fill='#444', outline='#888', tags='button')
+        self.button_canvas.bind('<Button-1>', self._button_press)
+        self.button_canvas.bind('<ButtonRelease-1>', self._button_release)
+        
+        ttk.Label(button_frame, text="Click to simulate press\n(Hold >0.7s = mute toggle)", font=('Arial', 9)).pack(side=tk.LEFT, padx=10)
+        
+        self.button_log = ttk.Label(button_frame, text="", font=('Arial', 9))
+        self.button_log.pack(side=tk.RIGHT)
+        
+        # === State Control Buttons ===
+        control_frame = ttk.LabelFrame(main_frame, text="Manual State Control", padding=5)
+        control_frame.pack(fill=tk.X, pady=5)
+        
+        states = [
+            ("💤 Idle", "idle", '#00ffff'),
+            ("🤔 Thinking", "thinking", '#ffff00'),
+            ("💻 Coding", "coding", '#00ff00'),
+            ("✅ Done", "done", '#00ff00'),
+            ("⚠️ Permission", "permission", '#ff0000')
+        ]
+        
+        for text, state, color in states:
+            btn = tk.Button(
+                control_frame,
+                text=text,
+                command=lambda s=state: self._set_state(s),
+                bg='#333',
+                fg=color,
+                font=('Arial', 10),
+                width=12
+            )
+            btn.pack(side=tk.LEFT, padx=2)
+        
+        # === Auto Demo ===
+        demo_frame = ttk.Frame(main_frame)
+        demo_frame.pack(fill=tk.X, pady=10)
+        
+        self.demo_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(demo_frame, text="Auto Demo Mode", variable=self.demo_var).pack(side=tk.LEFT)
+        
+        ttk.Button(demo_frame, text="Quit", command=self._quit).pack(side=tk.RIGHT)
+        
+        # Instructions
+        ttk.Label(
+            main_frame,
+            text="This simulator shows how the hardware will behave.\nNo ESP32 or components needed!",
+            font=('Arial', 9),
+            foreground='#888'
+        ).pack(pady=5)
+    
+    def _set_state(self, state):
+        """Set current state and trigger animations"""
+        self.current_state = state
+        self.anim_frame = 0
+        
+        # Update status label
+        state_icons = {
+            "idle": "💤 Idle",
+            "thinking": "🤔 Thinking",
+            "coding": "💻 Coding",
+            "done": "✅ Done",
+            "permission": "⚠️ Permission"
+        }
+        self.status_var.set(state_icons.get(state, state))
+        
+        # Trigger solenoid for done/permission states
+        if state == "done":
+            self._activate_solenoid(300)
+        elif state == "permission":
+            self._activate_solenoid(200)
+    
+    def _toggle_mute(self):
+        """Toggle mute state"""
+        self.muted = self.mute_var.get()
+        if self.muted:
+            self.button_log.config(text="🔇 Muted")
+        else:
+            self.button_log.config(text="🔊 Unmuted")
+            self._play_beep(800, 100)
+    
+    def _test_beep(self):
+        """Test buzzer sound"""
+        if not self.muted:
+            self._play_beep(1000, 200)
+            self._flash_buzzer()
+    
+    def _play_beep(self, freq, duration):
+        """Play beep sound (Windows only)"""
+        if not self.muted:
+            try:
+                winsound.Beep(freq, duration)
+            except:
+                pass  # Non-Windows or muted
+    
+    def _flash_buzzer(self):
+        """Flash buzzer indicator"""
+        self.buzzer_indicator.itemconfig('buzzer', fill='#00ff00')
+        self.root.after(100, lambda: self.buzzer_indicator.itemconfig('buzzer', fill='gray'))
+    
+    def _test_solenoid(self):
+        """Test solenoid tap"""
+        self._activate_solenoid(200)
+    
+    def _activate_solenoid(self, duration_ms):
+        """Activate solenoid for given duration"""
+        self.solenoid_active = True
+        self.solenoid_indicator.itemconfig('solenoid', fill='#ff6600')
+        self.solenoid_label.config(text="ON")
+        
+        # Play tap sound
+        if not self.muted:
+            try:
+                winsound.Beep(100, duration_ms)  # Low freq = thump
+            except:
+                pass
+        
+        self.root.after(duration_ms, self._deactivate_solenoid)
+    
+    def _deactivate_solenoid(self):
+        """Deactivate solenoid"""
+        self.solenoid_active = False
+        self.solenoid_indicator.itemconfig('solenoid', fill='gray')
+        self.solenoid_label.config(text="OFF")
+    
+    def _button_press(self, event):
+        """Button press event"""
+        self.button_canvas.itemconfig('button', fill='#00ff00')
+        self.button_press_time = time.time()
+    
+    def _button_release(self, event):
+        """Button release event"""
+        self.button_canvas.itemconfig('button', fill='#444')
+        
+        held_duration = time.time() - self.button_press_time
+        
+        if held_duration > 0.7:
+            # Long press = mute toggle
+            self.mute_var.set(not self.mute_var.get())
+            self._toggle_mute()
+        else:
+            # Short press = confirm
+            self.button_log.config(text="✓ Confirmed!")
+            if not self.muted:
+                self._play_beep(1000, 50)
+            
+            # If in permission state, switch to idle
+            if self.current_state == "permission":
+                self._set_state("idle")
+    
+    def _animation_loop(self):
+        """Background animation loop"""
+        while self.anim_running:
+            self._update_animation()
+            time.sleep(0.05)
+    
+    def _update_animation(self):
+        """Update TFT display animation"""
+        # Schedule canvas update in main thread
+        self.root.after(0, self._draw_tft)
+    
+    def _draw_tft(self):
+        """Draw TFT display content based on current state"""
+        self.tft_canvas.delete('all')
+        
+        # Clear screen with state-specific background
+        if self.current_state == "permission" and self.anim_frame % 2 == 1:
+            self.tft_canvas.create_rectangle(0, 0, 320, 160, fill='#ff0000', outline='')
+        else:
+            self.tft_canvas.create_rectangle(0, 0, 320, 160, fill='black', outline='')
+        
+        # Draw state-specific animation
+        if self.current_state == "idle":
+            self._draw_idle_animation()
+        elif self.current_state == "thinking":
+            self._draw_thinking_animation()
+        elif self.current_state == "coding":
+            self._draw_coding_animation()
+        elif self.current_state == "done":
+            self._draw_done_animation()
+        elif self.current_state == "permission":
+            self._draw_permission_animation()
+        
+        # Update frame counter
+        self.anim_frame += 1
+    
+    def _draw_idle_animation(self):
+        """Draw idle state: Zzz sleeping animation"""
+        # Z characters
+        z_text = "Z"
+        if self.anim_frame % 4 >= 1:
+            z_text += "z"
+        if self.anim_frame % 4 >= 2:
+            z_text += "z"
+        if self.anim_frame % 4 == 3:
+            z_text += "."
+        
+        self.tft_canvas.create_text(
+            160, 60,
+            text=z_text,
+            font=('Arial', 36, 'bold'),
+            fill='white'
+        )
+        
+        # Subtitle
+        self.tft_canvas.create_text(
+            160, 130,
+            text="[WORK IS OVER]",
+            font=('Arial', 12),
+            fill='#00ffff'
+        )
+        
+        # Beep on frame 0
+        if self.anim_frame % 4 == 0 and not self.muted:
+            self._play_beep(440, 30)
+            self._flash_buzzer()
+    
+    def _draw_thinking_animation(self):
+        """Draw thinking state: expanding circles"""
+        # Title
+        self.tft_canvas.create_text(
+            160, 20,
+            text="Thinking",
+            font=('Arial', 18, 'bold'),
+            fill='#ffff00'
+        )
+        
+        # Expanding circles
+        cx, cy = 160, 90
+        num_circles = self.anim_frame % 6
+        for i in range(num_circles):
+            r = 20 + i * 15
+            self.tft_canvas.create_oval(
+                cx - r, cy - r, cx + r, cy + r,
+                outline='#ffff00',
+                width=2
+            )
+        
+        # Beep
+        if not self.muted:
+            freq = 600 + (self.anim_frame % 6) * 80
+            self._play_beep(freq, 30)
+            self._flash_buzzer()
+    
+    def _draw_coding_animation(self):
+        """Draw coding state: scrolling code lines"""
+        self.tft_canvas.create_text(
+            10, 10,
+            text="> 0 line()",
+            font=('Courier', 10),
+            fill='#00ff00',
+            anchor='nw'
+        )
+        
+        for i in range(7):
+            y = 20 + i * 18
+            prefix = "> " if (self.anim_frame + i) % 4 == 0 else "  "
+            line_text = f"{prefix}{i} line()"
+            self.tft_canvas.create_text(
+                10, y,
+                text=line_text,
+                font=('Courier', 10),
+                fill='#00ff00',
+                anchor='nw'
+            )
+        
+        # Beep on frame 0
+        if self.anim_frame % 8 == 0 and not self.muted:
+            self._play_beep(1000, 20)
+            self._flash_buzzer()
+    
+    def _draw_done_animation(self):
+        """Draw done state: OK! with pulsing circle"""
+        # OK text
+        self.tft_canvas.create_text(
+            160, 40,
+            text="OK!",
+            font=('Arial', 28, 'bold'),
+            fill='#00ff00'
+        )
+        
+        # Pulsing circle
+        cx, cy = 160, 100
+        r = 30
+        if self.anim_frame % 3 == 1:
+            self.tft_canvas.create_oval(cx - r, cy - r, cx + r, cy + r, fill='#00ff00', outline='')
+        else:
+            self.tft_canvas.create_oval(cx - r, cy - r, cx + r, cy + r, outline='#00ff00', width=3)
+        
+        # Beep
+        if not self.muted:
+            self._play_beep(1500, 80)
+            self._flash_buzzer()
+    
+    def _draw_permission_animation(self):
+        """Draw permission state: flashing PRESS BUTTON"""
+        bg_color = '#ff0000' if self.anim_frame % 2 == 1 else 'black'
+        
+        self.tft_canvas.create_rectangle(0, 0, 320, 160, fill=bg_color, outline='')
+        
+        self.tft_canvas.create_text(
+            160, 50,
+            text="PRESS",
+            font=('Arial', 20, 'bold'),
+            fill='white'
+        )
+        
+        self.tft_canvas.create_text(
+            160, 90,
+            text="BUTTON",
+            font=('Arial', 20, 'bold'),
+            fill='white'
+        )
+        
+        # Beep
+        if not self.muted:
+            freq = 2000 if self.anim_frame % 2 == 1 else 800
+            self._play_beep(freq, 100)
+            self._flash_buzzer()
+        
+        # Solenoid tap
+        if self.anim_frame % 2 == 1:
+            self._activate_solenoid(150)
+    
+    def _quit(self):
+        """Quit simulator"""
+        self.anim_running = False
+        self.root.quit()
+        self.root.destroy()
+    
+    def run(self):
+        """Run the simulator"""
+        # Center window
+        self.root.update_idletasks()
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        x = (self.root.winfo_screenwidth() // 2) - (width // 2)
+        y = (self.root.winfo_screenheight() // 2) - (height // 2)
+        self.root.geometry(f'+{x}+{y}')
+        
+        self.root.mainloop()
+
+
+def run_simulator():
+    """Entry point for bridge.py"""
+    sim = HardwareSimulator()
+    sim.run()
+
+
+if __name__ == "__main__":
+    run_simulator()

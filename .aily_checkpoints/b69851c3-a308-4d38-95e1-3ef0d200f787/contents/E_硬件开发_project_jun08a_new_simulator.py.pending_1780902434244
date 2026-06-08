@@ -1,0 +1,602 @@
+#!/usr/bin/env python3
+"""
+Claude Code Status Monitor - Hardware Simulator
+================================================
+Preview the status monitor without physical hardware.
+Simulates TFT display, buzzer sounds, solenoid tapping, and button.
+Matches the ESP32 firmware animations pixel-for-pixel (scaled 2x).
+
+Run with: python simulator.py
+Or via bridge: python bridge.py --mode simulate
+"""
+
+import tkinter as tk
+from tkinter import ttk
+import threading
+import time
+import math
+import sys
+import os
+
+# Try to import winsound for Windows beep simulation
+try:
+    import winsound
+    HAS_WINSOUND = True
+except ImportError:
+    HAS_WINSOUND = False
+
+# Cat color (tft.color565(255, 120, 50) ≈ #FF7832)
+CAT_COLOR = '#FF7832'
+EYE_WHITE = '#FFFFFF'
+EYE_BLACK = '#000000'
+HAT_COLOR = '#FF3232'
+
+# ST77XX color equivalents
+ST77XX_BLACK = '#000000'
+ST77XX_WHITE = '#FFFFFF'
+ST77XX_RED = '#FF0000'
+ST77XX_GREEN = '#00FF00'
+ST77XX_BLUE = '#0000FF'
+ST77XX_CYAN = '#00FFFF'
+ST77XX_MAGENTA = '#FF00FF'
+ST77XX_YELLOW = '#FFFF00'
+ST77XX_ORANGE = '#FF7832'
+
+# Scale factor (ESP32 160x80 -> display 320x160)
+SCALE = 2
+
+def scale_xy(x, y):
+    return x * SCALE, y * SCALE
+
+def scale_wh(w, h):
+    return w * SCALE, h * SCALE
+
+
+class HardwareSimulator:
+    """Simulates ESP32 hardware: TFT, buzzer, solenoid, button"""
+
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Claude Monitor - Hardware Simulator")
+        self.root.configure(bg='#1a1a1a')
+        self.root.resizable(False, False)
+
+        # State variables
+        self.current_state = "idle"
+        self.anim_frame = 0
+        self.muted = False
+        self.solenoid_active = False
+
+        # Animation timers
+        self.anim_running = True
+        self.last_anim_time = 0
+        self.state_start_time = 0
+
+        # Button
+        self.button_press_time = 0
+
+        # Create GUI
+        self._create_gui()
+
+        # Start animation thread
+        self.anim_thread = threading.Thread(target=self._animation_loop, daemon=True)
+        self.anim_thread.start()
+
+    # ─── Drawing Helpers (matching ESP32 tft.fillRect etc.) ───
+
+    def _fill_rect(self, x, y, w, h, color):
+        """Simulate tft.fillRect()"""
+        sx, sy = scale_xy(x, y)
+        sw, sh = scale_wh(w, h)
+        self.tft_canvas.create_rectangle(sx, sy, sx + sw, sy + sh, fill=color, outline='')
+
+    def _draw_rect(self, x, y, w, h, color, width=1):
+        """Simulate tft.drawRect()"""
+        sx, sy = scale_xy(x, y)
+        sw, sh = scale_wh(w, h)
+        self.tft_canvas.create_rectangle(sx, sy, sx + sw, sy + sh, outline=color, width=width * SCALE)
+
+    def _fill_circle(self, cx, cy, r, color):
+        """Simulate tft.fillCircle()"""
+        sx, sy = scale_xy(cx, cy)
+        sr = r * SCALE
+        self.tft_canvas.create_oval(sx - sr, sy - sr, sx + sr, sy + sr, fill=color, outline='')
+
+    def _draw_circle(self, cx, cy, r, color, width=1):
+        """Simulate tft.drawCircle()"""
+        sx, sy = scale_xy(cx, cy)
+        sr = r * SCALE
+        self.tft_canvas.create_oval(sx - sr, sy - sr, sx + sr, sy + sr, outline=color, width=width * SCALE)
+
+    def _draw_text(self, x, y, text, color, size=1):
+        """Simulate tft.print() at cursor position"""
+        sx, sy = scale_xy(x, y)
+        font_size = size * 8 * SCALE
+        font = ('Courier', font_size, 'bold') if size >= 2 else ('Courier', font_size)
+        self.tft_canvas.create_text(sx, sy, text=text, fill=color, font=font, anchor='nw')
+
+    def _fill_screen(self, color):
+        """Simulate tft.fillScreen()"""
+        self.tft_canvas.create_rectangle(0, 0, 320, 160, fill=color, outline='')
+
+    # ─── Cat Character Drawing ───
+
+    def _draw_cat(self, bx, by, eye_h=5, pupil=True, mouth=False, arm_offset=0):
+        """
+        Draw the cat character at (bx, by).
+        Matches ESP32 pixel-art cat exactly.
+        body: 40x24, ears: 8x6 and 8x6, eyes: 6xeye_h, legs: 4x 6x4
+        """
+        col = CAT_COLOR
+
+        # Body
+        self._fill_rect(bx, by, 40, 24, col)
+        # Left ear
+        self._fill_rect(bx - 8, by + 4, 8, 6, col)
+        # Right ear
+        self._fill_rect(bx + 40, by + 4, 8, 6, col)
+        # Left eye white
+        self._fill_rect(bx + 8, by + 2, 6, eye_h, EYE_WHITE)
+        # Right eye white
+        self._fill_rect(bx + 26, by + 2, 6, eye_h, EYE_WHITE)
+
+        if pupil and eye_h >= 3:
+            # Left pupil
+            self._fill_rect(bx + 10, by + 3, 3, 3, EYE_BLACK)
+            # Right pupil
+            self._fill_rect(bx + 28, by + 3, 3, 3, EYE_BLACK)
+
+        if mouth:
+            # Open mouth (for permission state)
+            self._fill_rect(bx + 12, by + 14, 16, 4, EYE_BLACK)
+
+        # Legs (4 legs)
+        self._fill_rect(bx + 2, by + 24, 6, 4, col)
+        self._fill_rect(bx + 12, by + 24, 6, 4, col)
+        self._fill_rect(bx + 22, by + 24, 6, 4, col)
+        self._fill_rect(bx + 32, by + 24, 6, 4, col)
+
+        # Arm (for coding state)
+        if arm_offset != 0:
+            self._fill_rect(bx + 40, by + 10 + arm_offset, 8, 4, col)
+
+    # ─── State Animations (matching ESP32 firmware) ───
+
+    def _draw_idle(self):
+        """Idle: cat sleeping with Zzz bubbles, breathing animation"""
+        f = self.anim_frame % 8
+
+        # Breathing: slight y offset
+        by = 35 + (2 if f % 2 == 1 else 0)
+        bx = 60
+
+        self._draw_cat(bx, by, eye_h=3, pupil=False)
+
+        # Zzz bubbles (frames 0-3 show Z, z, z)
+        if f < 4:
+            zy = 15 - f * 4
+            self._draw_text(bx + 50, zy, "Z", ST77XX_CYAN, 1)
+            if f >= 1:
+                self._draw_text(bx + 58, zy + 8, "z", ST77XX_CYAN, 1)
+            if f >= 2:
+                self._draw_text(bx + 64, zy + 14, "z", ST77XX_CYAN, 1)
+
+        # Status text
+        self._draw_text(5, 65, "sleeping...", ST77XX_CYAN, 1)
+
+        # Beep
+        if f == 0 and not self.muted:
+            self._play_beep(330, 40)
+
+    def _draw_thinking(self):
+        """Thinking: cat with thought bubbles and dots"""
+        f = self.anim_frame % 12
+        bx, by = 60, 30
+
+        # Blinking eyes
+        eye_h = 3 if f < 6 else 4
+        self._draw_cat(bx, by, eye_h=eye_h, pupil=(eye_h == 3))
+
+        # Thought bubbles
+        bub = f % 3
+        self._draw_circle(bx + 55, by - 5, 8 + bub * 4, ST77XX_YELLOW)
+        self._draw_circle(bx + 55, by - 5, 4 + bub * 2, ST77XX_YELLOW)
+
+        # Dots animation
+        dots = f % 4
+        dot_text = "." * (dots + 1)
+        self._draw_text(bx + 48, by - 12, dot_text, ST77XX_YELLOW, 2)
+
+        # Status text
+        self._draw_text(5, 65, "thinking...", ST77XX_YELLOW, 1)
+
+        # Beep
+        if not self.muted:
+            self._play_beep(500 + f * 60, 25)
+
+    def _draw_coding(self):
+        """Coding: terminal window with scrolling code + cat typing"""
+        f = self.anim_frame % 20
+        bx, by = 10, 5
+
+        # Terminal window
+        term_color = '#006400'  # dark green border
+        self._draw_rect(bx, by, 70, 50, term_color)
+        self._fill_rect(bx + 1, by + 1, 68, 48, ST77XX_BLACK)
+
+        # Scrolling code lines
+        code_lines = ["void ", "int x ", "if(x)", "for(", "  x++", "}", "return", "delay", "Serial", "tone"]
+        for i in range(6):
+            line_idx = (f // 2 + i) % 10
+            ly = by + 3 + i * 8
+            prefix = ">" if line_idx % 3 == 0 else " "
+            self._draw_text(bx + 3, ly, prefix + " " + code_lines[line_idx], ST77XX_GREEN, 1)
+
+        # Cat (to the right, typing)
+        cx = 95
+        cy = 25 + (2 if f % 2 == 1 else 0)
+        arm_off = 3 if f % 2 == 1 else 0
+        self._draw_cat(cx, cy, eye_h=4, pupil=True, arm_offset=arm_off)
+
+        # Status text
+        self._draw_text(95, 60, "coding...", ST77XX_GREEN, 1)
+
+        # Beep
+        if f == 0 and not self.muted:
+            self._play_beep(1000, 15)
+
+    def _draw_done(self):
+        """Done: cat jumping with party hat, confetti, OK!"""
+        f = self.anim_frame % 10
+        bx = 55
+
+        # Jump animation
+        jump_y = 0
+        if f < 4:
+            jump_y = -((4 - f) * 5)
+        by = 30 + jump_y
+
+        # Eyes: wide open when jumping, normal after landing
+        eye_h = 5 if f < 5 else 3
+        self._draw_cat(bx, by, eye_h=eye_h, pupil=(eye_h == 3))
+
+        # Smile (after landing)
+        if eye_h == 3:
+            self._fill_rect(bx + 14, by + 12, 12, 3, EYE_BLACK)
+
+        # Party hat (red triangle)
+        self._fill_rect(bx + 18, by - 10, 4, 10, HAT_COLOR)
+        self._fill_circle(bx + 20, by - 12, 5, HAT_COLOR)
+
+        # Confetti
+        confetti_colors = [ST77XX_RED, ST77XX_YELLOW, ST77XX_GREEN, ST77XX_CYAN, ST77XX_MAGENTA]
+        for i in range(8):
+            cx = 10 + (i * 19 + f * 7) % 150
+            cy = 5 + (i * 13 + f * 5) % 70
+            self._fill_rect(cx, cy, 3, 3, confetti_colors[i % 5])
+
+        # OK! text
+        self._draw_text(100, 30, "OK!", ST77XX_GREEN, 2)
+        self._draw_text(5, 65, "done! ^_^", ST77XX_GREEN, 1)
+
+        # Beep
+        if not self.muted:
+            self._play_beep(1200 + f * 50, 60)
+
+        # Solenoid on state change
+        if f == 0:
+            self._activate_solenoid(300)
+
+    def _draw_permission(self):
+        """Permission: red/black flashing, cat with question mark, PRESS BTN"""
+        f = self.anim_frame % 2
+
+        # Flashing background
+        bg = '#3C0000' if f else ST77XX_BLACK
+        self._fill_screen(bg)
+
+        bx, by = 55, 25
+
+        # Cat with wide eyes and open mouth
+        self._draw_cat(bx, by, eye_h=5, pupil=True, mouth=True)
+
+        # Question mark dialog box
+        qx, qy = bx - 20, by - 15
+        self._draw_rect(qx, qy, 30, 22, ST77XX_YELLOW)
+        self._fill_rect(qx + 1, qy + 1, 28, 20, ST77XX_BLACK)
+        self._draw_text(qx + 6, qy + 2, "?", ST77XX_YELLOW, 2)
+
+        # Flashing PRESS BTN text
+        text_color = ST77XX_RED if f else ST77XX_YELLOW
+        self._draw_text(5, 65, "[PRESS BTN]", text_color, 1)
+
+        # Beep
+        if not self.muted:
+            self._play_beep(1800 if f else 600, 80)
+
+        # Solenoid
+        if f:
+            self._activate_solenoid(150)
+
+    # ─── Sound & Solenoid ───
+
+    def _play_beep(self, freq, duration):
+        if self.muted or not HAS_WINSOUND:
+            return
+        try:
+            threading.Thread(target=lambda: winsound.Beep(freq, duration), daemon=True).start()
+        except:
+            pass
+        self._flash_buzzer()
+
+    def _flash_buzzer(self):
+        self.buzzer_indicator.itemconfig('buzzer', fill='#00ff00')
+        self.root.after(100, lambda: self.buzzer_indicator.itemconfig('buzzer', fill='gray'))
+
+    def _activate_solenoid(self, duration_ms):
+        if self.solenoid_active:
+            return
+        self.solenoid_active = True
+        self.solenoid_indicator.itemconfig('solenoid', fill='#ff6600')
+        self.solenoid_label.config(text="ON ⚡")
+        if not self.muted and HAS_WINSOUND:
+            try:
+                threading.Thread(target=lambda: winsound.Beep(100, min(duration_ms, 200)), daemon=True).start()
+            except:
+                pass
+        self.root.after(duration_ms, self._deactivate_solenoid)
+
+    def _deactivate_solenoid(self):
+        self.solenoid_active = False
+        self.solenoid_indicator.itemconfig('solenoid', fill='gray')
+        self.solenoid_label.config(text="OFF")
+
+    # ─── Button ───
+
+    def _button_press(self, event):
+        self.button_canvas.itemconfig('button', fill='#00ff00')
+        self.button_press_time = time.time()
+
+    def _button_release(self, event):
+        self.button_canvas.itemconfig('button', fill='#444')
+        held = time.time() - self.button_press_time
+
+        if held > 0.7:
+            # Long press = mute toggle
+            self.muted = not self.muted
+            self.mute_var.set(self.muted)
+            self.button_log.config(text="🔇 Muted" if self.muted else "🔊 Unmuted")
+            if not self.muted:
+                self._play_beep(800, 100)
+        else:
+            # Short press = confirm
+            self.button_log.config(text="✓ Confirmed!")
+            if not self.muted:
+                self._play_beep(1000, 50)
+            if self.current_state == "permission":
+                self._set_state("idle")
+
+    # ─── State Control ───
+
+    def _set_state(self, state):
+        self.current_state = state
+        self.anim_frame = 0
+        self.state_start_time = time.time()
+
+        state_icons = {
+            "idle": "💤 Idle",
+            "thinking": "🤔 Thinking",
+            "coding": "💻 Coding",
+            "done": "✅ Done",
+            "permission": "⚠️ Permission"
+        }
+        self.status_var.set(state_icons.get(state, state))
+
+        if state == "done":
+            self._activate_solenoid(300)
+        elif state == "permission":
+            self._activate_solenoid(200)
+
+    def _toggle_mute(self):
+        self.muted = self.mute_var.get()
+        self.button_log.config(text="🔇 Muted" if self.muted else "🔊 Unmuted")
+        if not self.muted:
+            self._play_beep(800, 100)
+
+    # ─── Animation Loop ───
+
+    def _animation_loop(self):
+        """Background animation loop matching ESP32 frame rates"""
+        while self.anim_running:
+            self.root.after(0, self._draw_tft)
+            # Match ESP32 frame delays per state
+            if self.current_state == "idle":
+                time.sleep(0.5)
+            elif self.current_state == "thinking":
+                time.sleep(0.35)
+            elif self.current_state == "coding":
+                time.sleep(0.2)
+            elif self.current_state == "done":
+                time.sleep(0.3)
+            elif self.current_state == "permission":
+                time.sleep(0.4)
+            else:
+                time.sleep(0.05)
+
+    def _draw_tft(self):
+        """Main draw callback"""
+        self.tft_canvas.delete('all')
+
+        # Default black background (permission handles its own)
+        if self.current_state != "permission":
+            self._fill_screen(ST77XX_BLACK)
+
+        # Draw current state
+        if self.current_state == "idle":
+            self._draw_idle()
+        elif self.current_state == "thinking":
+            self._draw_thinking()
+        elif self.current_state == "coding":
+            self._draw_coding()
+        elif self.current_state == "done":
+            self._draw_done()
+        elif self.current_state == "permission":
+            self._draw_permission()
+
+        self.anim_frame += 1
+
+    # ─── GUI Setup ───
+
+    def _create_gui(self):
+        main_frame = ttk.Frame(self.root, padding=10)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+
+        style = ttk.Style()
+        style.configure('TFrame', background='#1a1a1a')
+        style.configure('TLabel', background='#1a1a1a', foreground='white')
+        style.configure('TLabelframe', background='#1a1a1a', foreground='white')
+        style.configure('TLabelframe.Label', background='#1a1a1a', foreground='white')
+
+        # === TFT Display (160x80 scaled 2x) ===
+        tft_frame = ttk.LabelFrame(main_frame, text="📺 TFT Display (0.96\" 160×80 ×2)", padding=5)
+        tft_frame.pack(pady=5)
+
+        self.tft_canvas = tk.Canvas(
+            tft_frame, width=160 * SCALE, height=80 * SCALE,
+            bg='black', highlightthickness=2, highlightbackground='#333'
+        )
+        self.tft_canvas.pack()
+
+        # === Status ===
+        status_frame = ttk.Frame(main_frame)
+        status_frame.pack(fill=tk.X, pady=5)
+
+        ttk.Label(status_frame, text="Current State:", font=('Arial', 10)).pack(side=tk.LEFT)
+        self.status_var = tk.StringVar(value="💤 idle")
+        self.status_label = ttk.Label(
+            status_frame, textvariable=self.status_var,
+            font=('Arial', 12, 'bold'), foreground='#00ff88'
+        )
+        self.status_label.pack(side=tk.LEFT, padx=10)
+
+        # === Hardware Indicators ===
+        hw_frame = ttk.Frame(main_frame)
+        hw_frame.pack(fill=tk.X, pady=5)
+
+        # Buzzer
+        buzzer_frame = ttk.LabelFrame(hw_frame, text="🔊 Buzzer", padding=3)
+        buzzer_frame.pack(side=tk.LEFT, padx=5, fill=tk.Y)
+        self.buzzer_indicator = tk.Canvas(buzzer_frame, width=24, height=24, bg='#1a1a1a', highlightthickness=0)
+        self.buzzer_indicator.pack()
+        self.buzzer_indicator.create_oval(2, 2, 22, 22, fill='gray', outline='#666', tags='buzzer')
+
+        # Solenoid
+        solenoid_frame = ttk.LabelFrame(hw_frame, text="⚡ Solenoid", padding=3)
+        solenoid_frame.pack(side=tk.LEFT, padx=5, fill=tk.Y)
+        self.solenoid_indicator = tk.Canvas(solenoid_frame, width=50, height=24, bg='#1a1a1a', highlightthickness=0)
+        self.solenoid_indicator.pack()
+        self.solenoid_indicator.create_rectangle(2, 2, 48, 22, fill='gray', outline='#666', tags='solenoid')
+        self.solenoid_label = ttk.Label(solenoid_frame, text="OFF", font=('Arial', 9))
+        self.solenoid_label.pack()
+
+        # Mute
+        mute_frame = ttk.Frame(hw_frame)
+        mute_frame.pack(side=tk.LEFT, padx=10)
+        self.mute_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(mute_frame, text="🔇 Mute", variable=self.mute_var, command=self._toggle_mute).pack()
+
+        # Button
+        btn_frame = ttk.LabelFrame(hw_frame, text="🔘 Button", padding=3)
+        btn_frame.pack(side=tk.LEFT, padx=5, fill=tk.Y)
+        self.button_canvas = tk.Canvas(btn_frame, width=50, height=30, bg='#1a1a1a', highlightthickness=0)
+        self.button_canvas.pack()
+        self.button_canvas.create_rectangle(10, 5, 40, 25, fill='#444', outline='#888', tags='button')
+        self.button_canvas.bind('<Button-1>', self._button_press)
+        self.button_canvas.bind('<ButtonRelease-1>', self._button_release)
+        self.button_log = ttk.Label(btn_frame, text="click me", font=('Arial', 8))
+        self.button_log.pack()
+
+        # === State Control ===
+        control_frame = ttk.LabelFrame(main_frame, text="🎮 Manual State Control", padding=5)
+        control_frame.pack(fill=tk.X, pady=5)
+
+        states = [
+            ("💤 Idle", "idle", '#00ffff'),
+            ("🤔 Thinking", "thinking", '#ffff00'),
+            ("💻 Coding", "coding", '#00ff00'),
+            ("✅ Done", "done", '#00ff00'),
+            ("⚠️ Permission", "permission", '#ff4444')
+        ]
+
+        for text, state, color in states:
+            tk.Button(
+                control_frame, text=text,
+                command=lambda s=state: self._set_state(s),
+                bg='#333', fg=color, font=('Arial', 10), width=13,
+                activebackground='#555', activeforeground=color,
+                relief=tk.RAISED, bd=2
+            ).pack(side=tk.LEFT, padx=2)
+
+        # === Auto Demo + Quit ===
+        bottom_frame = ttk.Frame(main_frame)
+        bottom_frame.pack(fill=tk.X, pady=8)
+
+        self.demo_var = tk.BooleanVar(value=False)
+        self.demo_btn = ttk.Checkbutton(bottom_frame, text="🔄 Auto Demo", variable=self.demo_var, command=self._toggle_demo)
+        self.demo_btn.pack(side=tk.LEFT)
+
+        ttk.Button(bottom_frame, text="❌ Quit", command=self._quit).pack(side=tk.RIGHT)
+
+        ttk.Label(
+            main_frame,
+            text="Pixel-perfect simulation of ESP32 firmware animations.\nNo hardware needed! Short press = confirm, Long press = mute toggle.",
+            font=('Arial', 9), foreground='#888'
+        ).pack(pady=3)
+
+    def _toggle_demo(self):
+        if self.demo_var.get():
+            self._demo_loop()
+
+    def _demo_loop(self):
+        if not self.demo_var.get() or not self.anim_running:
+            return
+        demo_seq = [
+            ("idle", 3),
+            ("thinking", 4),
+            ("coding", 5),
+            ("done", 3),
+            ("idle", 2),
+            ("permission", 4),
+            ("coding", 4),
+            ("done", 3),
+        ]
+        for state, duration in demo_seq:
+            if not self.demo_var.get() or not self.anim_running:
+                return
+            self._set_state(state)
+            time.sleep(duration)
+        # Loop
+        if self.demo_var.get() and self.anim_running:
+            self.root.after(100, self._demo_loop)
+
+    def _quit(self):
+        self.anim_running = False
+        self.root.quit()
+        self.root.destroy()
+
+    def run(self):
+        self.root.update_idletasks()
+        w = self.root.winfo_width()
+        h = self.root.winfo_height()
+        x = (self.root.winfo_screenwidth() // 2) - (w // 2)
+        y = (self.root.winfo_screenheight() // 2) - (h // 2)
+        self.root.geometry(f'+{x}+{y}')
+        self.root.mainloop()
+
+
+def run_simulator():
+    sim = HardwareSimulator()
+    sim.run()
+
+if __name__ == "__main__":
+    run_simulator()
