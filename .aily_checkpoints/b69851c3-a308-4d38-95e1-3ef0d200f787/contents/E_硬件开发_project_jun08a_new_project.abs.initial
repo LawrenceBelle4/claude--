@@ -1,6 +1,6 @@
 # ============================================
 # Blockly ABS File
-# Generated: 2026-06-08T12:31:37.849Z
+# Generated: 2026-06-08T12:40:52.218Z
 # Mode: Explicit block types (no syntax sugar)
 # ============================================
 
@@ -9,17 +9,17 @@
 #    variable_define("variable", int, math_number(0))
 
 arduino_global()
-    variable_define_scoped(global, CC, unsigned int, math_number(0))
-    variable_define_scoped(global, "gState", int, math_number(0))
-    variable_define_scoped(global, "gPrev", int, math_number(-1))
-    variable_define_scoped(global, "gFrm", int, math_number(0))
-    variable_define_scoped(global, "gMut", int, math_number(0))
-    variable_define_scoped(global, "gBtn", int, math_number(0))
-    variable_define_scoped(global, "gSolT", unsigned long, math_number(0))
-    variable_define_scoped(global, "gIdleSt", unsigned int, math_number(0))
-    variable_define_scoped(global, "gIdleSub", int, math_number(0))
-    variable_define_scoped(global, "gIdleT", unsigned long, math_number(0))
-    variable_define_scoped(global, "gTrans", int, math_number(0))
+    variable_define_scoped("global", CC, unsigned int, math_number(0))
+    variable_define_scoped("global", "gState", int, math_number(0))
+    variable_define_scoped("global", "gPrev", int, math_number(-1))
+    variable_define_scoped("global", "gFrm", int, math_number(0))
+    variable_define_scoped("global", "gMut", int, math_number(0))
+    variable_define_scoped("global", "gBtn", int, math_number(0))
+    variable_define_scoped("global", "gSolT", unsigned long, math_number(0))
+    variable_define_scoped("global", "gIdleSt", unsigned int, math_number(0))
+    variable_define_scoped("global", "gIdleSub", int, math_number(0))
+    variable_define_scoped("global", "gIdleT", unsigned long, math_number(0))
+    variable_define_scoped("global", "gTrans", int, math_number(0))
 
 arduino_setup()
     serial_begin(Serial, 115200)
