@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "description": "Clawd Pixel Crab Monitor - ESP32C3",
+  "description": "",
   "components": [
     {
       "refId": "board",
@@ -35,6 +35,13 @@
       "componentId": "component_irf540_default",
       "componentName": "IRF540 MOSFET",
       "pinmapId": "lib-core-io:irf540:default",
+      "instance": 0
+    },
+    {
+      "refId": "solenoid",
+      "componentId": "component_solenoid_default",
+      "componentName": "电磁铁",
+      "pinmapId": "lib-core-io:solenoid:default",
       "instance": 0
     }
   ],
@@ -278,6 +285,38 @@
       "type": "gnd",
       "label": "GND: GND → S",
       "color": "#000000"
+    },
+    {
+      "id": "conn_16",
+      "from": {
+        "ref": "irf540",
+        "pinId": "pin_drain",
+        "function": "D"
+      },
+      "to": {
+        "ref": "solenoid",
+        "pinId": "pin_sig",
+        "function": "SIG"
+      },
+      "type": "digital",
+      "label": "DIGITAL: D → SIG",
+      "color": "#3B82F6"
+    },
+    {
+      "id": "conn_17",
+      "from": {
+        "ref": "board",
+        "pinId": "pin_2",
+        "function": "5V"
+      },
+      "to": {
+        "ref": "solenoid",
+        "pinId": "pin_vcc",
+        "function": "VCC"
+      },
+      "type": "power",
+      "label": "POWER: 5V → VCC",
+      "color": "#EF4444"
     }
   ]
 }
