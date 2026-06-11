@@ -1,10 +1,12 @@
 # Clawd Pixel Crab Monitor - ESP32C3
-USE lib-adafruit-gfx:st7735:default AS st7735 "ST7735 TFT 160x80"
-USE lib-core-io:button:default AS button "按钮"
-USE lib-core-io:solenoid:default AS solenoid "电磁铁"
-USE lib-core-tone:buzzer:default AS buzzer "蜂鸣器"
+# 无续流二极管版本
 
-# TFT 屏幕 (CS=D10, DC=D9, MOSI=D7, SCK=D6, RST=D8, BL=D5)
+USE lib-adafruit-gfx:st7735:default AS st7735 "ST7735 TFT"
+USE lib-core-tone:buzzer:default AS buzzer "蜂鸣器"
+USE lib-core-io:button:default AS button "按钮"
+USE lib-core-io:irf540:default AS irf540 "IRF540 MOSFET"
+
+# ST7735 TFT 屏幕 (160x80)
 CONNECT board.3V3 -> st7735.VCC @power
 CONNECT board.GND -> st7735.GND @gnd
 CONNECT board.GPIO10 -> st7735.CS @spi
@@ -14,16 +16,19 @@ CONNECT board.GPIO6 -> st7735.SCLK @spi
 CONNECT board.GPIO8 -> st7735.RST @digital
 CONNECT board.GPIO5 -> st7735.BL @digital
 
-# 蜂鸣器 (D4)
+# 蜂鸣器
 CONNECT board.3V3 -> buzzer.VCC @power
 CONNECT board.GND -> buzzer.GND @gnd
 CONNECT board.GPIO4 -> buzzer.SIG @pwm
 
-# 电磁铁 (D3)
-CONNECT board.3V3 -> solenoid.VCC @power
-CONNECT board.GND -> solenoid.GND @gnd
-CONNECT board.GPIO3 -> solenoid.SIG @digital
-
-# 按钮 (D2, INPUT_PULLUP)
+# 按钮 (INPUT_PULLUP模式)
 CONNECT board.GND -> button.GND @gnd
 CONNECT board.GPIO2 -> button.SIG @digital
+
+# IRF540 MOSFET 驱动电磁铁
+# Gate通过100Ω保护电阻连接GPIO3
+CONNECT board.GPIO3 -> irf540.G @digital
+CONNECT board.GND -> irf540.S @gnd
+# Drain连接电磁铁负极，电磁铁正极连接外部电源VCC(5-12V)
+# 外部电源GND与ESP32 GND共地
+# 注意：无续流二极管

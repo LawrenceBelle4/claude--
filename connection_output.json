@@ -12,8 +12,15 @@
     {
       "refId": "st7735",
       "componentId": "component_st7735_default",
-      "componentName": "ST7735 TFT 160x80",
+      "componentName": "ST7735 TFT",
       "pinmapId": "lib-adafruit-gfx:st7735:default",
+      "instance": 0
+    },
+    {
+      "refId": "buzzer",
+      "componentId": "component_buzzer_default",
+      "componentName": "蜂鸣器",
+      "pinmapId": "lib-core-tone:buzzer:default",
       "instance": 0
     },
     {
@@ -24,17 +31,10 @@
       "instance": 0
     },
     {
-      "refId": "solenoid",
-      "componentId": "component_solenoid_default",
-      "componentName": "电磁铁",
-      "pinmapId": "lib-core-io:solenoid:default",
-      "instance": 0
-    },
-    {
-      "refId": "buzzer",
-      "componentId": "component_buzzer_default",
-      "componentName": "蜂鸣器",
-      "pinmapId": "lib-core-tone:buzzer:default",
+      "refId": "irf540",
+      "componentId": "component_irf540_default",
+      "componentName": "IRF540 MOSFET",
+      "pinmapId": "lib-core-io:irf540:default",
       "instance": 0
     }
   ],
@@ -219,54 +219,6 @@
       "id": "conn_12",
       "from": {
         "ref": "board",
-        "pinId": "pin_1",
-        "function": "3V3"
-      },
-      "to": {
-        "ref": "solenoid",
-        "pinId": "pin_vcc",
-        "function": "VCC"
-      },
-      "type": "power",
-      "label": "POWER: 3V3 → VCC",
-      "color": "#EF4444"
-    },
-    {
-      "id": "conn_13",
-      "from": {
-        "ref": "board",
-        "pinId": "pin_3",
-        "function": "GND"
-      },
-      "to": {
-        "ref": "solenoid",
-        "pinId": "pin_gnd",
-        "function": "GND"
-      },
-      "type": "gnd",
-      "label": "GND: GND → GND",
-      "color": "#000000"
-    },
-    {
-      "id": "conn_14",
-      "from": {
-        "ref": "board",
-        "pinId": "pin_8",
-        "function": "GPIO3"
-      },
-      "to": {
-        "ref": "solenoid",
-        "pinId": "pin_sig",
-        "function": "SIG"
-      },
-      "type": "digital",
-      "label": "DIGITAL: GPIO3 → SIG",
-      "color": "#3B82F6"
-    },
-    {
-      "id": "conn_15",
-      "from": {
-        "ref": "board",
         "pinId": "pin_3",
         "function": "GND"
       },
@@ -280,7 +232,7 @@
       "color": "#000000"
     },
     {
-      "id": "conn_16",
+      "id": "conn_13",
       "from": {
         "ref": "board",
         "pinId": "pin_7",
@@ -294,6 +246,38 @@
       "type": "digital",
       "label": "DIGITAL: GPIO2 → SIG",
       "color": "#3B82F6"
+    },
+    {
+      "id": "conn_14",
+      "from": {
+        "ref": "board",
+        "pinId": "pin_8",
+        "function": "GPIO3"
+      },
+      "to": {
+        "ref": "irf540",
+        "pinId": "pin_gate",
+        "function": "G"
+      },
+      "type": "digital",
+      "label": "DIGITAL: GPIO3 → G",
+      "color": "#3B82F6"
+    },
+    {
+      "id": "conn_15",
+      "from": {
+        "ref": "board",
+        "pinId": "pin_3",
+        "function": "GND"
+      },
+      "to": {
+        "ref": "irf540",
+        "pinId": "pin_source",
+        "function": "S"
+      },
+      "type": "gnd",
+      "label": "GND: GND → S",
+      "color": "#000000"
     }
   ]
 }
